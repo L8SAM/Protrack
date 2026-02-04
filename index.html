@@ -1,145 +1,59 @@
-:root {
-  --bg: #f2f4f8;
-  --card: #ffffff;
-  --text: #111;
-  --muted: #6b7280;
-  --accent: #4caf50;
-  --radius: 16px;
-}
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <title>Protrack</title>
 
-body {
-  margin: 0;
-  background: var(--bg);
-  font-family: system-ui, -apple-system, BlinkMacSystemFont;
-  color: var(--text);
-  padding: 16px;
-}
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#4caf50" />
+  <link rel="manifest" href="manifest.json" />
 
-/* HEADER */
-.app-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
+  <link rel="stylesheet" href="style.css" />
+</head>
 
-.header-left {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
+<body>
 
-.app-name {
-  font-weight: 700;
-  font-size: 20px;
-}
+  <!-- HEADER -->
+  <header class="app-header">
+    <div class="header-left">
+      <span class="app-name">Protrack</span>
+      <span id="userName" class="user-name">Gast</span>
+    </div>
 
-.user-name {
-  font-size: 14px;
-  color: var(--muted);
-}
+    <div class="header-right">
+      <button id="loginBtn">Login</button>
+      <button id="logoutBtn" style="display:none;">Logout</button>
+    </div>
+  </header>
 
-.header-right button {
-  background: none;
-  border: none;
-  font-size: 14px;
-  color: var(--accent);
-}
+  <!-- LOGIN MODAL (minimal) -->
+  <div id="loginModal" class="modal">
+    <div class="modal-card">
+      <h2>Login</h2>
+      <input type="email" id="email" placeholder="E-Mail" />
+      <input type="password" id="password" placeholder="Passwort" />
+      <button id="confirmLogin">Einloggen</button>
+    </div>
+  </div>
 
-/* CARDS */
-.card {
-  background: var(--card);
-  border-radius: var(--radius);
-  padding: 16px;
-  margin-bottom: 16px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.05);
-}
+  <!-- WEEK VIEW -->
+  <section class="card">
+    <h2>Diese Woche</h2>
+    <div id="week"></div>
+  </section>
 
-/* WEEK */
-#week {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 8px;
-}
+  <!-- INPUT -->
+  <section class="card">
+    <h2>Heute eintragen</h2>
+    <input
+      type="number"
+      id="proteinInput"
+      placeholder="Protein heute (g)"
+      inputmode="numeric"
+    />
+    <button id="saveBtn" disabled>Speichern</button>
+  </section>
 
-.day {
-  background: #f1f3f6;
-  border-radius: 12px;
-  padding: 8px;
-  font-size: 12px;
-  text-align: center;
-  transition: transform 0.2s ease;
-}
-
-.day.today {
-  outline: 2px solid var(--accent);
-}
-
-.day:hover {
-  transform: translateY(-2px);
-}
-
-.day-name {
-  font-weight: 600;
-}
-
-.day-date {
-  font-size: 11px;
-  color: var(--muted);
-}
-
-/* PROGRESS */
-.bar {
-  height: 6px;
-  background: #e5e7eb;
-  border-radius: 999px;
-  overflow: hidden;
-  margin-top: 6px;
-}
-
-.bar-fill {
-  height: 100%;
-  width: 0%;
-  background: var(--accent);
-  transition: width 0.4s ease;
-}
-
-/* INPUT */
-input {
-  width: 100%;
-  padding: 14px;
-  border-radius: 14px;
-  border: 1px solid #ddd;
-}
-
-button#saveBtn {
-  width: 100%;
-  margin-top: 10px;
-  padding: 14px;
-  border-radius: 14px;
-  border: none;
-  background: var(--accent);
-  color: white;
-}
-
-button:disabled {
-  opacity: 0.4;
-}
-
-/* MODAL */
-.modal {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.4);
-  display: none;
-  align-items: center;
-  justify-content: center;
-}
-
-.modal-card {
-  background: white;
-  padding: 20px;
-  border-radius: 16px;
-  width: 90%;
-  max-width: 320px;
-}
+  <script type="module" src="app.js"></script>
+</body>
+</html>
