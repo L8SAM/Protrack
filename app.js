@@ -1,66 +1,107 @@
 import { db, auth } from "./firebase.js";
-
 import {
   signInWithEmailAndPassword,
-  onAuthStateChanged
+  onAuthStateChanged,
+  signOut
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 
 import {
-  doc, setDoc, onSnapshot, getDocs, collection
+  doc,
+  setDoc,
+  onSnapshot
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
-
-const emailInput = document.getElementById("email");
-const passwordInput = document.getElementById("password");
-const loginBtn = document.getElementById("loginBtn");
-const saveBtn = document.getElementById("saveBtn");
-const proteinInput = document.getElementById("proteinInput");
-
-const todayValue = document.getElementById("todayValue");
-const progressBar = document.getElementById("progressBar");
-const calendar = document.getElementById("calendar");
-const stats = document.getElementById("stats");
 
 const TARGET = 150;
 
-let currentUser = null;
+// HEADER
+const userName = document.getElementById("userName");
+const loginBtn = document.getElementById("loginBtn");
+const logoutBtn = document.getElementById("logoutBtn");
+
+// LOGIN MODAL
+const modal = document.getElementById("loginModal");
+const confirmLogin = document.getElementById("confirmLogin");
+const emailInput = document.getElementById("email");
+const passwordInput = document.getElementById("password");
+
+// INPUT
+const saveBtn = document.getElementById("saveBtn");
+const proteinInput = document.getElementById("proteinInput");
+
+// WEEK
+const weekEl = document.getElementById("week");
+
 let currentName = null;
 
-const now = new Date();
-const year = now.getFullYear();
-const month = now.getMonth();
-const todayId = formatDate(now);
-
-// LOGIN
-loginBtn.onclick = async () => {
-  try {
-    await signInWithEmailAndPassword(
-      auth,
-      emailInput.value,
-      passwordInput.value
-    );
-  } catch {
-    alert("Login fehlgeschlagen");
-  }
+// LOGIN FLOW
+loginBtn.onclick = () => modal.style.display = "flex";
+confirmLogin.onclick = async () => {
+  await signInWithEmailAndPassword(auth, emailInput.value, passwordInput.value);
+  modal.style.display = "none";
 };
+logoutBtn.onclick = () => signOut(auth);
 
 onAuthStateChanged(auth, user => {
   if (user) {
-    currentUser = user;
+    loginBtn.style.display = "none";
+    logoutBtn.style.display = "block";
     saveBtn.disabled = false;
-    if (user.email.startsWith("noah")) currentName = "Noah";
-    if (user.email.startsWith("max")) currentName = "Max";
+
+    currentName = user.email.startsWith("noah") ? "Noah" : "Max";
+    userName.textContent = currentName;
   } else {
-    currentUser = null;
+    loginBtn.style.display = "block";
+    logoutBtn.style.display = "none";
     saveBtn.disabled = true;
+    userName.textContent = "Gast";
   }
 });
 
-// SAVE
-saveBtn.onclick = async () => {
-  if (!currentUser) return;
+// WEEK BUILD
+function startOfWeek(date) {
+  const d = new Date(date);
+  const day = d.getDay() || 7;
+  d.setDate(d.getDate() - day + 1);
+  return d;
+}
 
+const today = new Date();
+const monday = startOfWeek(today);
+
+for (let i = 0; i < 7; i++) {
+  const d = new Date(monday);
+  d.setDate(monday.getDate() + i);
+  const id = d.toISOString().split("T")[0];
+
+  const dayDiv = document.createElement("div");
+  dayDiv.className = "day";
+  if (id === today.toISOString().split("T")[0]) dayDiv.classList.add("today");
+
+  dayDiv.innerHTML = `
+    <div class="day-name">${d.toLocaleDateString("de-DE", { weekday: "short" })}</div>
+    <div class="day-date">${d.getDate()}.${d.getMonth()+1}</div>
+    <div class="bar"><div class="bar-fill" id="bar-${id}"></div></div>
+  `;
+
+  weekEl.appendChild(dayDiv);
+
+  onSnapshot(doc(db, "proteinTracker", id), snap => {
+    if (!snap.exists()) return;
+    const data = snap.data();
+    const total = (data.Noah ?? 0) + (data.Max ?? 0);
+    const percent = Math.min(100, (total / TARGET) * 100);
+    document.getElementById(`bar-${id}`).style.width = percent + "%";
+  });
+}
+
+// SAVE (mit Micro-Feedback)
+saveBtn.onclick = async () => {
   const val = Number(proteinInput.value);
-  if (!val) return;
+  if (!val || !currentName) return;
+
+  const todayId = today.toISOString().split("T")[0];
+  saveBtn.textContent = "✓ Gespeichert";
+  saveBtn.disabled = true;
 
   await setDoc(
     doc(db, "proteinTracker", todayId),
@@ -68,74 +109,10 @@ saveBtn.onclick = async () => {
     { merge: true }
   );
 
+  setTimeout(() => {
+    saveBtn.textContent = "Speichern";
+    saveBtn.disabled = false;
+  }, 1200);
+
   proteinInput.value = "";
 };
-
-// TODAY LISTENER
-onSnapshot(doc(db, "proteinTracker", todayId), snap => {
-  if (!snap.exists()) return;
-  const data = snap.data();
-  const total = (data.Noah ?? 0) + (data.Max ?? 0);
-  todayValue.textContent = `${total} g`;
-  progressBar.style.width = `${Math.min(100, total / TARGET * 100)}%`;
-});
-
-// CALENDAR
-function buildCalendar() {
-  calendar.innerHTML = "";
-  const days = new Date(year, month + 1, 0).getDate();
-
-  for (let d = 1; d <= days; d++) {
-    const date = new Date(year, month, d);
-    const id = formatDate(date);
-
-    const div = document.createElement("div");
-    div.className = "day";
-    if (id === todayId) div.classList.add("today");
-    div.textContent = d;
-    calendar.appendChild(div);
-
-    onSnapshot(doc(db, "proteinTracker", id), snap => {
-      if (snap.exists()) {
-        const data = snap.data();
-        div.innerHTML = `
-          ${d}<br>
-          N: ${data.Noah ?? "-"}<br>
-          M: ${data.Max ?? "-"}
-        `;
-      }
-    });
-  }
-}
-
-// STATS
-async function loadStats() {
-  let n = [], m = [];
-
-  const snap = await getDocs(collection(db, "proteinTracker"));
-  snap.forEach(docu => {
-    const d = new Date(docu.id);
-    if (d.getMonth() === month && d.getFullYear() === year) {
-      const data = docu.data();
-      if (data.Noah) n.push(data.Noah);
-      if (data.Max) m.push(data.Max);
-    }
-  });
-
-  stats.innerHTML = `
-    Noah Ø: ${avg(n)} g<br>
-    Max Ø: ${avg(m)} g
-  `;
-}
-
-function avg(arr) {
-  if (!arr.length) return "-";
-  return (arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(1);
-}
-
-function formatDate(d) {
-  return d.toISOString().split("T")[0];
-}
-
-buildCalendar();
-loadStats();
