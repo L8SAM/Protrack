@@ -2,43 +2,72 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
-  <title>Protrack</title>
+  <title>Protrack – Protein Tracker</title>
+
+  <!-- Mobile & PWA -->
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#4caf50" />
+  <link rel="manifest" href="manifest.json" />
+
+  <!-- Styles -->
   <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
 
-<h1>🥩 Protrack</h1>
+  <!-- HEADER -->
+  <h1>🥩 Protrack</h1>
+  <p style="text-align:center; color:#666; margin-top:-10px;">
+    Protein-Tracking einfach & klar
+  </p>
 
-<!-- LOGIN -->
-<div id="loginBox">
-  <input type="email" id="email" placeholder="E-Mail" />
-  <input type="password" id="password" placeholder="Passwort" />
-  <button id="loginBtn">Login</button>
-  <p class="hint">🔒 Zum Eintragen bitte einloggen</p>
-</div>
-
-<!-- TODAY -->
-<div id="todayBox">
-  <h2>Heute</h2>
-  <p id="todayValue">–</p>
-  <div class="progress">
-    <div id="progressBar"></div>
+  <!-- LOGIN (nur fürs Schreiben nötig) -->
+  <div id="loginBox">
+    <h2>Login</h2>
+    <input type="email" id="email" placeholder="E-Mail" />
+    <input type="password" id="password" placeholder="Passwort" />
+    <button id="loginBtn">Einloggen</button>
+    <p class="hint">🔒 Zum Eintragen bitte einloggen</p>
   </div>
-</div>
 
-<!-- APP -->
-<div id="app">
-  <input type="number" id="proteinInput" placeholder="Protein heute (g)" />
-  <button id="saveBtn" disabled>Speichern</button>
+  <!-- HEUTE -->
+  <div id="todayBox">
+    <h2>Heute</h2>
+    <p id="todayValue">–</p>
 
-  <h2>📅 Monat</h2>
-  <div id="calendar"></div>
+    <div class="progress">
+      <div id="progressBar"></div>
+    </div>
+    <p class="hint">Ziel: 150 g Protein</p>
+  </div>
 
-  <h2>📊 Statistik (Monat)</h2>
-  <div id="stats"></div>
-</div>
+  <!-- APP (Lesen immer sichtbar, Schreiben nur mit Login aktiv) -->
+  <div id="app">
 
-<script type="module" src="app.js"></script>
+    <!-- EINTRAGEN -->
+    <h2>Eintragen</h2>
+    <input
+      type="number"
+      id="proteinInput"
+      placeholder="Protein heute (g)"
+      inputmode="numeric"
+    />
+    <button id="saveBtn" disabled>Speichern</button>
+
+    <!-- KALENDER -->
+    <h2>📅 Monat</h2>
+    <div id="calendar"></div>
+
+    <!-- STATISTIK -->
+    <h2>📊 Statistik (aktueller Monat)</h2>
+    <div id="stats">
+      –
+    </div>
+
+  </div>
+
+  <!-- APP LOGIK -->
+  <script type="module" src="app.js"></script>
+
 </body>
 </html>
