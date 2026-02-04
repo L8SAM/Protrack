@@ -1,41 +1,134 @@
-body {
-  font-family: system-ui, sans-serif;
-  background: #f5f7fa;
-  padding: 16px;
-  max-width: 480px;
-  margin: auto;
+:root {
+  --bg: #f2f4f8;
+  --card: #ffffff;
+  --text: #111;
+  --muted: #6b7280;
+  --accent: #4caf50;
+  --radius: 16px;
 }
 
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, Inter, system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  max-width: 480px;
+  margin-inline: auto;
+}
+
+/* ---------- TYPO ---------- */
+
 h1 {
+  font-size: 28px;
   text-align: center;
+  margin-bottom: 4px;
+}
+
+.subtitle {
+  text-align: center;
+  color: var(--muted);
+  font-size: 14px;
+  margin-bottom: 24px;
 }
 
 h2 {
-  margin-top: 24px;
+  font-size: 18px;
+  margin: 0 0 12px;
 }
 
-#loginBox, #todayBox, #app {
-  background: white;
-  padding: 16px;
-  border-radius: 14px;
-  margin-top: 16px;
+/* ---------- CARDS ---------- */
+
+.card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 18px;
+  margin-bottom: 18px;
+  box-shadow:
+    0 10px 25px rgba(0,0,0,0.06);
 }
 
-input, button {
+/* ---------- LOGIN ---------- */
+
+#loginBox input {
   width: 100%;
   padding: 12px;
   margin-top: 8px;
-  font-size: 16px;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  font-size: 15px;
 }
 
-button:disabled {
-  opacity: 0.4;
+#loginBox button {
+  width: 100%;
+  margin-top: 10px;
+  padding: 12px;
+  border-radius: 12px;
+  border: none;
+  background: #111;
+  color: white;
+  font-size: 15px;
 }
 
 .hint {
   font-size: 12px;
-  color: #666;
+  color: var(--muted);
+  margin-top: 8px;
 }
+
+/* ---------- TODAY ---------- */
+
+.today-value {
+  font-size: 40px;
+  font-weight: 700;
+  margin: 8px 0;
+}
+
+.progress {
+  height: 10px;
+  background: #e5e7eb;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+#progressBar {
+  height: 100%;
+  width: 0%;
+  background: var(--accent);
+  transition: width 0.3s ease;
+}
+
+/* ---------- INPUT ---------- */
+
+#proteinInput {
+  width: 100%;
+  padding: 14px;
+  font-size: 16px;
+  border-radius: 14px;
+  border: 1px solid #ddd;
+}
+
+#saveBtn {
+  width: 100%;
+  margin-top: 10px;
+  padding: 14px;
+  border-radius: 14px;
+  border: none;
+  background: var(--accent);
+  color: white;
+  font-size: 16px;
+}
+
+#saveBtn:disabled {
+  opacity: 0.4;
+}
+
+/* ---------- CALENDAR ---------- */
 
 #calendar {
   display: grid;
@@ -44,25 +137,20 @@ button:disabled {
 }
 
 .day {
-  background: #eef1f4;
-  padding: 6px;
-  border-radius: 8px;
-  font-size: 12px;
-}
-
-.today {
-  background: #cfe3ff;
-}
-
-.progress {
-  background: #eee;
+  background: #f1f3f6;
   border-radius: 10px;
-  height: 10px;
-  overflow: hidden;
+  padding: 6px;
+  font-size: 11px;
+  min-height: 52px;
 }
 
-#progressBar {
-  height: 100%;
-  width: 0%;
-  background: #4caf50;
+.day.today {
+  background: #dff2e3;
+}
+
+/* ---------- STATS ---------- */
+
+#stats {
+  font-size: 14px;
+  line-height: 1.6;
 }
