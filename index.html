@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <title>Protrack – Protein Tracker</title>
 
-  <!-- Mobile & PWA -->
+  <!-- Mobile / App -->
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#4caf50" />
   <link rel="manifest" href="manifest.json" />
@@ -16,35 +16,42 @@
 <body>
 
   <!-- HEADER -->
-  <h1>🥩 Protrack</h1>
-  <p style="text-align:center; color:#666; margin-top:-10px;">
-    Protein-Tracking einfach & klar
-  </p>
+  <h1>Protrack</h1>
+  <p class="subtitle">Protein klar im Blick</p>
 
   <!-- LOGIN (nur fürs Schreiben nötig) -->
-  <div id="loginBox">
+  <div id="loginBox" class="card">
     <h2>Login</h2>
-    <input type="email" id="email" placeholder="E-Mail" />
-    <input type="password" id="password" placeholder="Passwort" />
+    <input
+      type="email"
+      id="email"
+      placeholder="E-Mail"
+      autocomplete="username"
+    />
+    <input
+      type="password"
+      id="password"
+      placeholder="Passwort"
+      autocomplete="current-password"
+    />
     <button id="loginBtn">Einloggen</button>
     <p class="hint">🔒 Zum Eintragen bitte einloggen</p>
   </div>
 
-  <!-- HEUTE -->
-  <div id="todayBox">
+  <!-- HEUTE / HERO -->
+  <div id="todayBox" class="card">
     <h2>Heute</h2>
-    <p id="todayValue">–</p>
+    <div class="today-value" id="todayValue">–</div>
 
     <div class="progress">
       <div id="progressBar"></div>
     </div>
-    <p class="hint">Ziel: 150 g Protein</p>
+
+    <p class="hint">Tagesziel: 150 g Protein</p>
   </div>
 
-  <!-- APP (Lesen immer sichtbar, Schreiben nur mit Login aktiv) -->
-  <div id="app">
-
-    <!-- EINTRAGEN -->
+  <!-- EINTRAGEN -->
+  <div class="card">
     <h2>Eintragen</h2>
     <input
       type="number"
@@ -53,20 +60,21 @@
       inputmode="numeric"
     />
     <button id="saveBtn" disabled>Speichern</button>
-
-    <!-- KALENDER -->
-    <h2>📅 Monat</h2>
-    <div id="calendar"></div>
-
-    <!-- STATISTIK -->
-    <h2>📊 Statistik (aktueller Monat)</h2>
-    <div id="stats">
-      –
-    </div>
-
   </div>
 
-  <!-- APP LOGIK -->
+  <!-- KALENDER -->
+  <div class="card">
+    <h2>📅 Monat</h2>
+    <div id="calendar"></div>
+  </div>
+
+  <!-- STATISTIK -->
+  <div class="card">
+    <h2>📊 Statistik (aktueller Monat)</h2>
+    <div id="stats">–</div>
+  </div>
+
+  <!-- LOGIK -->
   <script type="module" src="app.js"></script>
 
 </body>
