@@ -1,37 +1,68 @@
 body {
-  font-family: Arial, sans-serif;
-  background: #f4f6f8;
-  padding: 20px;
+  font-family: system-ui, sans-serif;
+  background: #f5f7fa;
+  padding: 16px;
+  max-width: 480px;
+  margin: auto;
 }
 
 h1 {
   text-align: center;
 }
 
-#loginBox, #app {
-  max-width: 400px;
-  margin: 20px auto;
+h2 {
+  margin-top: 24px;
+}
+
+#loginBox, #todayBox, #app {
   background: white;
-  padding: 20px;
-  border-radius: 10px;
+  padding: 16px;
+  border-radius: 14px;
+  margin-top: 16px;
 }
 
 input, button {
   width: 100%;
-  padding: 10px;
-  margin-top: 10px;
+  padding: 12px;
+  margin-top: 8px;
+  font-size: 16px;
+}
+
+button:disabled {
+  opacity: 0.4;
+}
+
+.hint {
+  font-size: 12px;
+  color: #666;
 }
 
 #calendar {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 6px;
-  margin-top: 10px;
 }
 
 .day {
-  background: #eee;
+  background: #eef1f4;
   padding: 6px;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 12px;
+}
+
+.today {
+  background: #cfe3ff;
+}
+
+.progress {
+  background: #eee;
+  border-radius: 10px;
+  height: 10px;
+  overflow: hidden;
+}
+
+#progressBar {
+  height: 100%;
+  width: 0%;
+  background: #4caf50;
 }
