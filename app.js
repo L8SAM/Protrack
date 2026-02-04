@@ -30,8 +30,10 @@ const proteinInput = document.getElementById("proteinInput");
 
 // WEEK
 const weekEl = document.getElementById("week");
+const emptyHint = document.getElementById("emptyHint");
 
 let currentName = null;
+let weekHasData = false;
 
 // LOGIN FLOW
 loginBtn.onclick = () => modal.style.display = "flex";
@@ -57,7 +59,7 @@ onAuthStateChanged(auth, user => {
   }
 });
 
-// WEEK BUILD
+// WEEK LOGIC
 function startOfWeek(date) {
   const d = new Date(date);
   const day = d.getDay() || 7;
@@ -66,6 +68,7 @@ function startOfWeek(date) {
 }
 
 const today = new Date();
+const todayId = today.toISOString().split("T")[0];
 const monday = startOfWeek(today);
 
 for (let i = 0; i < 7; i++) {
@@ -75,31 +78,44 @@ for (let i = 0; i < 7; i++) {
 
   const dayDiv = document.createElement("div");
   dayDiv.className = "day";
-  if (id === today.toISOString().split("T")[0]) dayDiv.classList.add("today");
+  if (id === todayId) dayDiv.classList.add("today");
 
   dayDiv.innerHTML = `
     <div class="day-name">${d.toLocaleDateString("de-DE", { weekday: "short" })}</div>
-    <div class="day-date">${d.getDate()}.${d.getMonth()+1}</div>
-    <div class="bar"><div class="bar-fill" id="bar-${id}"></div></div>
+    <div class="day-date">${d.getDate()}.${d.getMonth() + 1}</div>
+    <div class="bar">
+      <div class="bar-fill" id="bar-${id}"></div>
+    </div>
   `;
 
   weekEl.appendChild(dayDiv);
 
   onSnapshot(doc(db, "proteinTracker", id), snap => {
-    if (!snap.exists()) return;
+    const bar = document.getElementById(`bar-${id}`);
+
+    if (!snap.exists()) {
+      bar.style.width = "0%";
+      bar.style.opacity = "0.3";
+      return;
+    }
+
     const data = snap.data();
     const total = (data.Noah ?? 0) + (data.Max ?? 0);
     const percent = Math.min(100, (total / TARGET) * 100);
-    document.getElementById(`bar-${id}`).style.width = percent + "%";
+
+    bar.style.width = percent + "%";
+    bar.style.opacity = "1";
+
+    weekHasData = true;
+    emptyHint.style.display = "none";
   });
 }
 
-// SAVE (mit Micro-Feedback)
+// SAVE
 saveBtn.onclick = async () => {
   const val = Number(proteinInput.value);
   if (!val || !currentName) return;
 
-  const todayId = today.toISOString().split("T")[0];
   saveBtn.textContent = "✓ Gespeichert";
   saveBtn.disabled = true;
 
