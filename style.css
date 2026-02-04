@@ -7,6 +7,10 @@
   --radius: 16px;
 }
 
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   background: var(--bg);
@@ -72,6 +76,7 @@ body {
 }
 
 .day.today {
+  background: #e8f5e9;
   outline: 2px solid var(--accent);
 }
 
@@ -101,7 +106,8 @@ body {
   height: 100%;
   width: 0%;
   background: var(--accent);
-  transition: width 0.4s ease;
+  opacity: 0.3;
+  transition: width 0.4s ease, opacity 0.3s ease;
 }
 
 /* INPUT */
@@ -124,6 +130,13 @@ button#saveBtn {
 
 button:disabled {
   opacity: 0.4;
+}
+
+/* HINT */
+.hint {
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 10px;
 }
 
 /* MODAL */
