@@ -3,30 +3,42 @@
 <head>
   <meta charset="UTF-8" />
   <title>Protrack</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <h1>🥩 Protrack – Protein Tracker</h1>
+<h1>🥩 Protrack</h1>
 
-  <!-- LOGIN -->
-  <div id="loginBox">
-    <input type="email" id="email" placeholder="E-Mail" />
-    <input type="password" id="password" placeholder="Passwort" />
-    <button id="loginBtn">Login</button>
+<!-- LOGIN -->
+<div id="loginBox">
+  <input type="email" id="email" placeholder="E-Mail" />
+  <input type="password" id="password" placeholder="Passwort" />
+  <button id="loginBtn">Login</button>
+  <p class="hint">🔒 Zum Eintragen bitte einloggen</p>
+</div>
+
+<!-- TODAY -->
+<div id="todayBox">
+  <h2>Heute</h2>
+  <p id="todayValue">–</p>
+  <div class="progress">
+    <div id="progressBar"></div>
   </div>
+</div>
 
-  <!-- APP -->
-  <div id="app" style="display:none;">
-    <p id="userInfo"></p>
+<!-- APP -->
+<div id="app">
+  <input type="number" id="proteinInput" placeholder="Protein heute (g)" />
+  <button id="saveBtn" disabled>Speichern</button>
 
-    <input type="number" id="proteinInput" placeholder="Protein heute (g)" />
-    <button id="saveBtn">Speichern</button>
+  <h2>📅 Monat</h2>
+  <div id="calendar"></div>
 
-    <h2>📅 Kalender</h2>
-    <div id="calendar"></div>
-  </div>
+  <h2>📊 Statistik (Monat)</h2>
+  <div id="stats"></div>
+</div>
 
-  <script type="module" src="app.js"></script>
+<script type="module" src="app.js"></script>
 </body>
 </html>
