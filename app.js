@@ -6,33 +6,29 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 
 import {
-  doc,
-  setDoc,
-  onSnapshot
+  doc, setDoc, onSnapshot, getDocs, collection
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
-
-const loginBox = document.getElementById("loginBox");
-const appDiv = document.getElementById("app");
-const userInfo = document.getElementById("userInfo");
 
 const emailInput = document.getElementById("email");
 const passwordInput = document.getElementById("password");
 const loginBtn = document.getElementById("loginBtn");
-
-const proteinInput = document.getElementById("proteinInput");
 const saveBtn = document.getElementById("saveBtn");
+const proteinInput = document.getElementById("proteinInput");
+
+const todayValue = document.getElementById("todayValue");
+const progressBar = document.getElementById("progressBar");
 const calendar = document.getElementById("calendar");
+const stats = document.getElementById("stats");
 
-let canWrite = false;
-let currentUserName = null;
+const TARGET = 150;
 
-const today = new Date();
-const year = today.getFullYear();
-const month = today.getMonth();
+let currentUser = null;
+let currentName = null;
 
-function formatDate(d) {
-  return d.toISOString().split("T")[0];
-}
+const now = new Date();
+const year = now.getFullYear();
+const month = now.getMonth();
+const todayId = formatDate(now);
 
 // LOGIN
 loginBtn.onclick = async () => {
@@ -47,46 +43,44 @@ loginBtn.onclick = async () => {
   }
 };
 
-// AUTH STATUS
 onAuthStateChanged(auth, user => {
   if (user) {
-    loginBox.style.display = "none";
-    appDiv.style.display = "block";
-    canWrite = true;
-
-    if (user.email.startsWith("noah")) currentUserName = "Noah";
-    if (user.email.startsWith("max")) currentUserName = "Max";
-
-    userInfo.textContent = `Eingeloggt als ${currentUserName}`;
+    currentUser = user;
+    saveBtn.disabled = false;
+    if (user.email.startsWith("noah")) currentName = "Noah";
+    if (user.email.startsWith("max")) currentName = "Max";
   } else {
-    loginBox.style.display = "block";
-    appDiv.style.display = "none";
-    canWrite = false;
+    currentUser = null;
+    saveBtn.disabled = true;
   }
 });
 
 // SAVE
 saveBtn.onclick = async () => {
-  if (!canWrite) {
-    alert("Bitte einloggen");
-    return;
-  }
+  if (!currentUser) return;
 
-  const protein = Number(proteinInput.value);
-  if (!protein) return;
-
-  const dateId = formatDate(new Date());
+  const val = Number(proteinInput.value);
+  if (!val) return;
 
   await setDoc(
-    doc(db, "proteinTracker", dateId),
-    { [currentUserName]: protein },
+    doc(db, "proteinTracker", todayId),
+    { [currentName]: val },
     { merge: true }
   );
 
   proteinInput.value = "";
 };
 
-// KALENDER
+// TODAY LISTENER
+onSnapshot(doc(db, "proteinTracker", todayId), snap => {
+  if (!snap.exists()) return;
+  const data = snap.data();
+  const total = (data.Noah ?? 0) + (data.Max ?? 0);
+  todayValue.textContent = `${total} g`;
+  progressBar.style.width = `${Math.min(100, total / TARGET * 100)}%`;
+});
+
+// CALENDAR
 function buildCalendar() {
   calendar.innerHTML = "";
   const days = new Date(year, month + 1, 0).getDate();
@@ -97,7 +91,7 @@ function buildCalendar() {
 
     const div = document.createElement("div");
     div.className = "day";
-    div.id = id;
+    if (id === todayId) div.classList.add("today");
     div.textContent = d;
     calendar.appendChild(div);
 
@@ -106,12 +100,42 @@ function buildCalendar() {
         const data = snap.data();
         div.innerHTML = `
           ${d}<br>
-          Noah: ${data.Noah ?? "-"}<br>
-          Max: ${data.Max ?? "-"}
+          N: ${data.Noah ?? "-"}<br>
+          M: ${data.Max ?? "-"}
         `;
       }
     });
   }
 }
 
+// STATS
+async function loadStats() {
+  let n = [], m = [];
+
+  const snap = await getDocs(collection(db, "proteinTracker"));
+  snap.forEach(docu => {
+    const d = new Date(docu.id);
+    if (d.getMonth() === month && d.getFullYear() === year) {
+      const data = docu.data();
+      if (data.Noah) n.push(data.Noah);
+      if (data.Max) m.push(data.Max);
+    }
+  });
+
+  stats.innerHTML = `
+    Noah Ø: ${avg(n)} g<br>
+    Max Ø: ${avg(m)} g
+  `;
+}
+
+function avg(arr) {
+  if (!arr.length) return "-";
+  return (arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(1);
+}
+
+function formatDate(d) {
+  return d.toISOString().split("T")[0];
+}
+
 buildCalendar();
+loadStats();
