@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <title>Protrack</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <h1>🥩 Protrack – Protein Tracker</h1>
+
+  <!-- LOGIN -->
+  <div id="loginBox">
+    <input type="email" id="email" placeholder="E-Mail" />
+    <input type="password" id="password" placeholder="Passwort" />
+    <button id="loginBtn">Login</button>
+  </div>
+
+  <!-- APP -->
+  <div id="app" style="display:none;">
+    <p id="userInfo"></p>
+
+    <input type="number" id="proteinInput" placeholder="Protein heute (g)" />
+    <button id="saveBtn">Speichern</button>
+
+    <h2>📅 Kalender</h2>
+    <div id="calendar"></div>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
