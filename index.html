@@ -14,8 +14,16 @@
 
 <header class="app-header">
   <div class="header-left">
-    <div class="logo">LOGO</div>
-    <span class="app-name">Protrack</span>
+    <!-- LOGO -->
+    <picture>
+      <source media="(max-width: 420px)" srcset="logo-protrack-small.png">
+      <img
+        src="logo-protrack-horizontal.png"
+        alt="Protrack"
+        class="app-logo"
+      />
+    </picture>
+
     <span id="userName" class="user-name">Gast</span>
   </div>
 
@@ -26,7 +34,7 @@
 </header>
 
 <p id="offlineHint" class="hint" style="display:none;">
-  ⚠️ Offline – wird später synchronisiert
+  ⚠️ Offline – Einträge werden später synchronisiert
 </p>
 
 <!-- LOGIN OVERLAY -->
@@ -39,7 +47,7 @@
   </div>
 </div>
 
-<!-- TODAY -->
+<!-- HEUTE -->
 <section class="card">
   <h2>Heute</h2>
 
@@ -56,7 +64,7 @@
   </div>
 </section>
 
-<!-- WEEK -->
+<!-- WOCHE -->
 <section class="card">
   <h2>Diese Woche</h2>
   <div id="weekChart"></div>
@@ -65,7 +73,12 @@
 <!-- INPUT -->
 <section class="card">
   <h2>Heute eintragen</h2>
-  <input type="number" id="proteinInput" placeholder="Protein heute (g)" />
+  <input
+    type="number"
+    id="proteinInput"
+    placeholder="Protein heute (g)"
+    inputmode="numeric"
+  />
   <button id="saveBtn" disabled>Speichern</button>
 </section>
 
