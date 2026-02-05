@@ -1,6 +1,6 @@
 :root {
   --bg: #f2f4f8;
-  --card: #fff;
+  --card: #ffffff;
   --text: #111;
   --muted: #6b7280;
   --blue: #3b82f6;
@@ -29,23 +29,19 @@ body {
 .header-left {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
 
-.logo {
-  width: 32px;
-  height: 32px;
-  background: #e5e7eb;
-  border-radius: 8px;
-  font-size: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.app-logo {
+  height: 30px;
+  width: auto;
+  display: block;
 }
 
-.app-name {
-  font-weight: 700;
-  font-size: 18px;
+@media (max-width: 420px) {
+  .app-logo {
+    height: 24px;
+  }
 }
 
 .user-name {
@@ -56,8 +52,8 @@ body {
 .header-right button {
   background: none;
   border: none;
-  color: var(--muted);
   font-size: 14px;
+  color: var(--muted);
 }
 
 /* CARDS */
@@ -69,7 +65,7 @@ body {
   box-shadow: 0 8px 20px rgba(0,0,0,0.05);
 }
 
-/* TODAY */
+/* HEUTE */
 .today-row {
   display: grid;
   grid-template-columns: 50px 1fr 40px;
@@ -108,7 +104,7 @@ body {
   text-align: right;
 }
 
-/* WEEK CHART */
+/* WOCHE */
 #weekChart {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -116,8 +112,8 @@ body {
 }
 
 .week-day {
-  text-align: center;
   font-size: 11px;
+  text-align: center;
 }
 
 .week-bars {
@@ -177,6 +173,7 @@ button:disabled {
   max-width: 320px;
 }
 
+/* HINT */
 .hint {
   font-size: 13px;
   color: var(--muted);
