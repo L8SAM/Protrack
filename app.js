@@ -12,7 +12,7 @@ import {
 
 const TARGET = 150;
 
-// Elements
+// ELEMENTE
 const loginBtn = document.getElementById("loginBtn");
 const logoutBtn = document.getElementById("logoutBtn");
 const overlay = document.getElementById("loginOverlay");
@@ -59,7 +59,7 @@ onAuthStateChanged(auth, user => {
   }
 });
 
-// TODAY
+// HEUTE
 const today = new Date().toISOString().split("T")[0];
 onSnapshot(doc(db, "proteinTracker", today), snap => {
   const data = snap.data() || {};
@@ -72,7 +72,7 @@ onSnapshot(doc(db, "proteinTracker", today), snap => {
   todayMaxPct.textContent = Math.round(m) + "%";
 });
 
-// WEEK
+// WOCHE
 function startOfWeek(d) {
   const date = new Date(d);
   const day = date.getDay() || 7;
@@ -87,16 +87,16 @@ for (let i = 0; i < 7; i++) {
   d.setDate(monday.getDate() + i);
   const id = d.toISOString().split("T")[0];
 
-  const dayEl = document.createElement("div");
-  dayEl.className = "week-day";
-  dayEl.innerHTML = `
+  const el = document.createElement("div");
+  el.className = "week-day";
+  el.innerHTML = `
     ${d.toLocaleDateString("de-DE", { weekday: "short" })}
     <div class="week-bars">
       <div class="week-bar"><div id="n-${id}" class="week-fill" style="background:#3b82f6"></div></div>
       <div class="week-bar"><div id="m-${id}" class="week-fill" style="background:#22c55e"></div></div>
     </div>
   `;
-  weekChart.appendChild(dayEl);
+  weekChart.appendChild(el);
 
   onSnapshot(doc(db, "proteinTracker", id), snap => {
     const data = snap.data() || {};
@@ -107,7 +107,7 @@ for (let i = 0; i < 7; i++) {
   });
 }
 
-// SAVE
+// SPEICHERN
 saveBtn.onclick = async () => {
   if (!currentName) return;
   const val = Number(input.value);
