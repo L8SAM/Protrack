@@ -5,8 +5,8 @@
   <title>Protrack</title>
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#4caf50" />
-  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#3b82f6" />
+
   <link rel="stylesheet" href="style.css" />
 </head>
 
@@ -26,39 +26,40 @@
 </header>
 
 <p id="offlineHint" class="hint" style="display:none;">
-  ⚠️ Offline – Einträge werden synchronisiert, sobald du wieder online bist
+  ⚠️ Offline – wird später synchronisiert
 </p>
 
-<!-- LOGIN -->
-<div id="loginModal" class="login-card">
-  <h2>Login</h2>
-  <input type="email" id="email" placeholder="E-Mail" />
-  <input type="password" id="password" placeholder="Passwort" />
-  <button id="confirmLogin">Einloggen</button>
+<!-- LOGIN OVERLAY -->
+<div id="loginOverlay" class="overlay">
+  <div class="login-card">
+    <h2>Login</h2>
+    <input type="email" id="email" placeholder="E-Mail" />
+    <input type="password" id="password" placeholder="Passwort" />
+    <button id="confirmLogin">Einloggen</button>
+  </div>
 </div>
 
 <!-- TODAY -->
 <section class="card">
   <h2>Heute</h2>
 
-  <div class="person">
+  <div class="today-row">
     <span class="label blue">Noah</span>
     <div class="bar"><div id="todayNoah" class="fill blue"></div></div>
+    <span id="todayNoahPct" class="pct">0%</span>
   </div>
 
-  <div class="person">
+  <div class="today-row">
     <span class="label green">Max</span>
     <div class="bar"><div id="todayMax" class="fill green"></div></div>
+    <span id="todayMaxPct" class="pct">0%</span>
   </div>
 </section>
 
 <!-- WEEK -->
 <section class="card">
   <h2>Diese Woche</h2>
-  <div id="week"></div>
-  <p id="emptyHint" class="hint">
-    Noch keine Einträge diese Woche – starte heute 💪
-  </p>
+  <div id="weekChart"></div>
 </section>
 
 <!-- INPUT -->
