@@ -18,6 +18,7 @@ body {
   margin-inline: auto;
 }
 
+/* HEADER */
 .app-header {
   display: flex;
   justify-content: space-between;
@@ -36,10 +37,10 @@ body {
   height: 32px;
   background: #e5e7eb;
   border-radius: 8px;
+  font-size: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 10px;
 }
 
 .app-name {
@@ -59,6 +60,7 @@ body {
   font-size: 14px;
 }
 
+/* CARDS */
 .card {
   background: var(--card);
   border-radius: var(--radius);
@@ -67,8 +69,13 @@ body {
   box-shadow: 0 8px 20px rgba(0,0,0,0.05);
 }
 
-.person {
-  margin-bottom: 12px;
+/* TODAY */
+.today-row {
+  display: grid;
+  grid-template-columns: 50px 1fr 40px;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
 }
 
 .label {
@@ -84,7 +91,6 @@ body {
   background: #e5e7eb;
   border-radius: 999px;
   overflow: hidden;
-  margin-top: 4px;
 }
 
 .fill {
@@ -96,24 +102,45 @@ body {
 .fill.blue { background: var(--blue); }
 .fill.green { background: var(--green); }
 
-#week {
+.pct {
+  font-size: 12px;
+  color: var(--muted);
+  text-align: right;
+}
+
+/* WEEK CHART */
+#weekChart {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 6px;
 }
 
-.day {
-  background: #f1f3f6;
-  border-radius: 10px;
-  padding: 6px;
-  font-size: 11px;
+.week-day {
   text-align: center;
+  font-size: 11px;
 }
 
-.day.today {
-  outline: 2px solid #999;
+.week-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 4px;
 }
 
+.week-bar {
+  height: 6px;
+  background: #e5e7eb;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.week-fill {
+  height: 100%;
+  width: 0%;
+  transition: width 0.4s ease;
+}
+
+/* INPUT */
 input, button {
   width: 100%;
   padding: 14px;
@@ -132,11 +159,22 @@ button:disabled {
   opacity: 0.4;
 }
 
+/* LOGIN OVERLAY */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
 .login-card {
   background: #fff;
+  padding: 20px;
   border-radius: var(--radius);
-  padding: 16px;
-  margin-bottom: 16px;
+  width: 90%;
+  max-width: 320px;
 }
 
 .hint {
