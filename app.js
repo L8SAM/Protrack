@@ -1,134 +1,145 @@
-import { db, auth } from "./firebase.js";
-import {
-  signInWithEmailAndPassword,
-  onAuthStateChanged,
-  signOut
-} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
-
-import {
-  doc,
-  setDoc,
-  onSnapshot
-} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
-
-const TARGET = 150;
-
-// HEADER
-const userName = document.getElementById("userName");
-const loginBtn = document.getElementById("loginBtn");
-const logoutBtn = document.getElementById("logoutBtn");
-
-// LOGIN MODAL
-const modal = document.getElementById("loginModal");
-const confirmLogin = document.getElementById("confirmLogin");
-const emailInput = document.getElementById("email");
-const passwordInput = document.getElementById("password");
-
-// INPUT
-const saveBtn = document.getElementById("saveBtn");
-const proteinInput = document.getElementById("proteinInput");
-
-// WEEK
-const weekEl = document.getElementById("week");
-const emptyHint = document.getElementById("emptyHint");
-
-let currentName = null;
-let weekHasData = false;
-
-// LOGIN FLOW
-loginBtn.onclick = () => modal.style.display = "flex";
-confirmLogin.onclick = async () => {
-  await signInWithEmailAndPassword(auth, emailInput.value, passwordInput.value);
-  modal.style.display = "none";
-};
-logoutBtn.onclick = () => signOut(auth);
-
-onAuthStateChanged(auth, user => {
-  if (user) {
-    loginBtn.style.display = "none";
-    logoutBtn.style.display = "block";
-    saveBtn.disabled = false;
-
-    currentName = user.email.startsWith("noah") ? "Noah" : "Max";
-    userName.textContent = currentName;
-  } else {
-    loginBtn.style.display = "block";
-    logoutBtn.style.display = "none";
-    saveBtn.disabled = true;
-    userName.textContent = "Gast";
-  }
-});
-
-// WEEK LOGIC
-function startOfWeek(date) {
-  const d = new Date(date);
-  const day = d.getDay() || 7;
-  d.setDate(d.getDate() - day + 1);
-  return d;
+:root {
+  --bg: #f2f4f8;
+  --card: #fff;
+  --text: #111;
+  --muted: #6b7280;
+  --blue: #3b82f6;
+  --green: #22c55e;
+  --radius: 16px;
 }
 
-const today = new Date();
-const todayId = today.toISOString().split("T")[0];
-const monday = startOfWeek(today);
-
-for (let i = 0; i < 7; i++) {
-  const d = new Date(monday);
-  d.setDate(monday.getDate() + i);
-  const id = d.toISOString().split("T")[0];
-
-  const dayDiv = document.createElement("div");
-  dayDiv.className = "day";
-  if (id === todayId) dayDiv.classList.add("today");
-
-  dayDiv.innerHTML = `
-    <div class="day-name">${d.toLocaleDateString("de-DE", { weekday: "short" })}</div>
-    <div class="day-date">${d.getDate()}.${d.getMonth() + 1}</div>
-    <div class="bar">
-      <div class="bar-fill" id="bar-${id}"></div>
-    </div>
-  `;
-
-  weekEl.appendChild(dayDiv);
-
-  onSnapshot(doc(db, "proteinTracker", id), snap => {
-    const bar = document.getElementById(`bar-${id}`);
-
-    if (!snap.exists()) {
-      bar.style.width = "0%";
-      bar.style.opacity = "0.3";
-      return;
-    }
-
-    const data = snap.data();
-    const total = (data.Noah ?? 0) + (data.Max ?? 0);
-    const percent = Math.min(100, (total / TARGET) * 100);
-
-    bar.style.width = percent + "%";
-    bar.style.opacity = "1";
-
-    weekHasData = true;
-    emptyHint.style.display = "none";
-  });
+body {
+  margin: 0;
+  padding: 16px;
+  background: var(--bg);
+  font-family: system-ui, -apple-system;
+  color: var(--text);
+  max-width: 520px;
+  margin-inline: auto;
 }
 
-// SAVE
-saveBtn.onclick = async () => {
-  const val = Number(proteinInput.value);
-  if (!val || !currentName) return;
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
 
-  saveBtn.textContent = "✓ Gespeichert";
-  saveBtn.disabled = true;
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
 
-  await setDoc(
-    doc(db, "proteinTracker", todayId),
-    { [currentName]: val },
-    { merge: true }
-  );
+.logo {
+  width: 32px;
+  height: 32px;
+  background: #e5e7eb;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+}
 
-  setTimeout(() => {
-    saveBtn.textContent = "Speichern";
-    saveBtn.disabled = false;
-  }, 1200);
+.app-name {
+  font-weight: 700;
+  font-size: 18px;
+}
 
-  proteinInput.value = "";
-};
+.user-name {
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.header-right button {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+}
+
+.person {
+  margin-bottom: 12px;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.blue { color: var(--blue); }
+.green { color: var(--green); }
+
+.bar {
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+.fill {
+  height: 100%;
+  width: 0%;
+  transition: width 0.4s ease;
+}
+
+.fill.blue { background: var(--blue); }
+.fill.green { background: var(--green); }
+
+#week {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+
+.day {
+  background: #f1f3f6;
+  border-radius: 10px;
+  padding: 6px;
+  font-size: 11px;
+  text-align: center;
+}
+
+.day.today {
+  outline: 2px solid #999;
+}
+
+input, button {
+  width: 100%;
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid #ddd;
+}
+
+button {
+  background: #111;
+  color: #fff;
+  border: none;
+  margin-top: 8px;
+}
+
+button:disabled {
+  opacity: 0.4;
+}
+
+.login-card {
+  background: #fff;
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.hint {
+  font-size: 13px;
+  color: var(--muted);
+}
