@@ -11,9 +11,6 @@
   <link rel="icon" href="icon-192.png">
   <link rel="apple-touch-icon" href="icon-192.png">
 
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-title" content="Protrack">
-
   <link rel="stylesheet" href="style.css" />
 </head>
 
@@ -23,7 +20,7 @@
   <div class="header-left">
     <picture>
       <source media="(max-width:420px)" srcset="logo-protrack-small.png">
-      <img src="logo-protrack-horizontal.png" class="app-logo" alt="Protrack">
+      <img src="logo-protrack-horizontal.png" class="app-logo" />
     </picture>
     <span id="userName" class="user-name"></span>
   </div>
@@ -49,19 +46,27 @@
 </div>
 
 <!-- HEUTE -->
-<section class="card">
+<section class="card today-card">
   <h2>Heute</h2>
 
-  <div class="today-row">
-    <span class="label blue">Noah</span>
-    <div class="bar"><div id="todayNoah" class="fill blue"></div></div>
-    <span id="todayNoahPct" class="pct">0%</span>
+  <div class="today-person">
+    <div class="today-header">
+      <span class="name blue">Noah</span>
+      <span id="todayNoahText" class="today-value">0 % · 0 g / 170 g</span>
+    </div>
+    <div class="today-bar">
+      <div id="todayNoah" class="today-fill blue"></div>
+    </div>
   </div>
 
-  <div class="today-row">
-    <span class="label green">Max</span>
-    <div class="bar"><div id="todayMax" class="fill green"></div></div>
-    <span id="todayMaxPct" class="pct">0%</span>
+  <div class="today-person">
+    <div class="today-header">
+      <span class="name green">Max</span>
+      <span id="todayMaxText" class="today-value">0 % · 0 g / 170 g</span>
+    </div>
+    <div class="today-bar">
+      <div id="todayMax" class="today-fill green"></div>
+    </div>
   </div>
 </section>
 
@@ -80,18 +85,9 @@
   <h2>Heute eintragen</h2>
 
   <div class="input-row">
-    <input
-      id="proteinInput"
-      type="number"
-      min="1"
-      step="1"
-      placeholder="g"
-      inputmode="numeric"
-    />
+    <input id="proteinInput" type="number" placeholder="g" min="1" inputmode="numeric">
     <button id="saveBtn" disabled>Speichern</button>
   </div>
-
-  <p id="saveHint" class="hint" style="display:none;">✔️ Gespeichert</p>
 </section>
 
 <footer class="hint" style="text-align:center">
