@@ -4,6 +4,12 @@
   <meta charset="UTF-8" />
   <title>Protrack</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- iOS PWA Pflicht -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Protrack">
+
   <link rel="stylesheet" href="style.css" />
 </head>
 
@@ -18,7 +24,7 @@
   </div>
 </header>
 
-<!-- LOGIN OVERLAY -->
+<!-- LOGIN -->
 <div id="loginOverlay" class="overlay">
   <div class="login-card">
     <h2>Login</h2>
@@ -28,7 +34,6 @@
   </div>
 </div>
 
-<!-- HEUTE -->
 <section class="card">
   <h2>Heute</h2>
 
@@ -43,13 +48,11 @@
   </div>
 </section>
 
-<!-- DIESE WOCHE -->
 <section class="card">
   <h2>Diese Woche</h2>
   <div id="weekChart"></div>
 </section>
 
-<!-- LETZTE WOCHE -->
 <section class="card muted">
   <h2>Letzte Woche</h2>
   <div id="lastWeekChart"></div>
@@ -60,6 +63,7 @@
   <button id="saveBtn">Speichern</button>
 </div>
 
-<script type="module" src="app.js"></script>
+<!-- NUR EINE DATEI -->
+<script src="app.js"></script>
 </body>
 </html>
