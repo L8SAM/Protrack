@@ -11,7 +11,7 @@
 
   <link rel="stylesheet" href="style.css" />
 
-  <!-- 🔥 FIREBASE – SYNCHRON & STABIL -->
+  <!-- Firebase compat -->
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
@@ -20,14 +20,29 @@
 <body>
 
 <header class="app-header">
-  <strong id="logo">Protrack</strong>
-  <div>
+  <!-- LOGO -->
+  <div class="logo-wrap">
+    <img
+      src="logo-protrack-horizontal.png"
+      alt="Protrack"
+      class="logo logo-horizontal"
+    />
+    <img
+      src="logo-protrack-small.png"
+      alt="Protrack"
+      class="logo logo-small"
+    />
+  </div>
+
+  <!-- ACTIONS -->
+  <div class="header-actions">
     <span class="user-name" id="userName"></span>
     <button id="loginBtn">Login</button>
     <button id="logoutBtn" style="display:none">Logout</button>
   </div>
 </header>
 
+<!-- LOGIN OVERLAY -->
 <div id="loginOverlay" class="overlay">
   <div class="login-card">
     <h2>Login</h2>
@@ -37,24 +52,36 @@
   </div>
 </div>
 
+<!-- HEUTE -->
 <section class="card">
   <h2>Heute</h2>
+
   <div class="today-block">
     <span>Noah</span>
     <div class="bar"><div id="todayNoah" class="fill blue"></div></div>
   </div>
+
   <div class="today-block">
     <span>Max</span>
     <div class="bar"><div id="todayMax" class="fill green"></div></div>
   </div>
 </section>
 
+<!-- PLATZHALTER – kommt in Schritt 2/3 -->
+<section class="card">
+  <h2>Diese Woche</h2>
+</section>
+
+<section class="card muted">
+  <h2>Letzte Woche</h2>
+</section>
+
+<!-- SAVE BAR (kommt in Schritt 4) -->
 <div id="saveBar" class="savebar hidden">
   <input id="proteinInput" type="number" placeholder="g">
   <button id="saveBtn">Speichern</button>
 </div>
 
-<!-- APP -->
 <script src="app.js"></script>
 </body>
 </html>
