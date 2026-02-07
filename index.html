@@ -20,7 +20,7 @@
 <body>
 
 <header class="app-header">
-  <!-- LOGO -->
+  <!-- Logo (wie früher Text, jetzt Bild) -->
   <div class="logo-wrap">
     <img
       src="logo-protrack-horizontal.png"
@@ -34,8 +34,7 @@
     />
   </div>
 
-  <!-- ACTIONS -->
-  <div class="header-actions">
+  <div>
     <span class="user-name" id="userName"></span>
     <button id="loginBtn">Login</button>
     <button id="logoutBtn" style="display:none">Logout</button>
@@ -58,25 +57,34 @@
 
   <div class="today-block">
     <span>Noah</span>
-    <div class="bar"><div id="todayNoah" class="fill blue"></div></div>
+    <span id="todayNoahText"></span>
+    <div class="bar">
+      <div id="todayNoah" class="fill blue"></div>
+    </div>
   </div>
 
   <div class="today-block">
     <span>Max</span>
-    <div class="bar"><div id="todayMax" class="fill green"></div></div>
+    <span id="todayMaxText"></span>
+    <div class="bar">
+      <div id="todayMax" class="fill green"></div>
+    </div>
   </div>
 </section>
 
-<!-- PLATZHALTER – kommt in Schritt 2/3 -->
+<!-- DIESE WOCHE -->
 <section class="card">
   <h2>Diese Woche</h2>
+  <div id="weekChart"></div>
 </section>
 
+<!-- LETZTE WOCHE -->
 <section class="card muted">
   <h2>Letzte Woche</h2>
+  <div id="lastWeekChart"></div>
 </section>
 
-<!-- SAVE BAR (kommt in Schritt 4) -->
+<!-- SAVEBAR -->
 <div id="saveBar" class="savebar hidden">
   <input id="proteinInput" type="number" placeholder="g">
   <button id="saveBtn">Speichern</button>
