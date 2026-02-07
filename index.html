@@ -3,13 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>Protrack</title>
-
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#3b82f6" />
-
-  <link rel="manifest" href="manifest.json">
-  <link rel="icon" href="icon-192.png">
-  <link rel="apple-touch-icon" href="icon-192.png">
 
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -17,25 +11,12 @@
 <body>
 
 <header class="app-header">
-  <div class="header-left">
-    <picture>
-      <source media="(max-width:420px)" srcset="logo-protrack-small.png">
-      <img src="logo-protrack-horizontal.png" class="app-logo" />
-    </picture>
-    <span id="userName" class="user-name"></span>
-  </div>
-
-  <div class="header-right">
-    <button id="loginBtn">Login</button>
-    <button id="logoutBtn" style="display:none;">Logout</button>
-  </div>
+  <span class="user-name" id="userName"></span>
+  <button id="loginBtn">Login</button>
+  <button id="logoutBtn" style="display:none">Logout</button>
 </header>
 
-<p id="offlineHint" class="hint" style="display:none;">
-  ⚠️ Offline – wird später synchronisiert
-</p>
-
-<!-- LOGIN -->
+<!-- LOGIN OVERLAY -->
 <div id="loginOverlay" class="overlay">
   <div class="login-card">
     <h2>Login</h2>
@@ -46,30 +27,20 @@
 </div>
 
 <!-- HEUTE -->
-<section class="card today-card">
+<section class="card">
   <h2>Heute</h2>
 
-  <div class="today-person">
-    <div class="today-header">
-      <span class="name blue">Noah</span>
-      <span id="todayNoahText" class="today-value">0 % · 0 g / 170 g</span>
-    </div>
-    <div class="today-bar">
-      <div id="todayNoah" class="today-fill blue"></div>
-    </div>
+  <div class="today-block">
+    <span>Noah</span>
+    <span id="todayNoahText"></span>
+    <div class="bar"><div id="todayNoah" class="fill blue"></div></div>
   </div>
 
-  <div class="today-person">
-    <div class="today-header">
-      <span class="name green">Max</span>
-      <span id="todayMaxText" class="today-value">0 % · 0 g / 170 g</span>
-    </div>
-    <div class="today-bar">
-      <div id="todayMax" class="today-fill green"></div>
-    </div>
+  <div class="today-block">
+    <span>Max</span>
+    <span id="todayMaxText"></span>
+    <div class="bar"><div id="todayMax" class="fill green"></div></div>
   </div>
-
-  <p id="eveningHint" class="hint" style="display:none;"></p>
 </section>
 
 <!-- DIESE WOCHE -->
@@ -79,31 +50,17 @@
 </section>
 
 <!-- LETZTE WOCHE -->
-<section class="card secondary">
+<section class="card muted">
   <h2>Letzte Woche</h2>
   <div id="lastWeekChart"></div>
 </section>
 
-<!-- STICKY SAVEBAR -->
+<!-- SAVEBAR -->
 <div id="saveBar" class="savebar hidden">
-  <input id="proteinInput" type="number" placeholder="g" min="1" inputmode="numeric">
-  <button id="saveBtn">Eintragen</button>
+  <input id="proteinInput" type="number" placeholder="g">
+  <button id="saveBtn">Speichern</button>
 </div>
 
-<div id="undoBar" class="undo-bar hidden">
-  ✓ Gespeichert <button id="undoBtn">Rückgängig</button>
-</div>
-
-<footer class="hint" style="text-align:center">
-  Zielwert: 2 g Protein pro kg Körpergewicht ≈ <strong>170 g</strong>
-</footer>
-
-<script>
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("sw.js");
-  }
-</script>
-
-<script type="module" src="app.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
