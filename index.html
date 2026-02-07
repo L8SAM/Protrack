@@ -5,7 +5,11 @@
   <title>Protrack</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- iOS PWA -->
+  <!-- PWA / Icons -->
+  <link rel="icon" href="icon-192.png">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png">
+
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Protrack">
 
@@ -20,18 +24,9 @@
 <body>
 
 <header class="app-header">
-  <!-- Logo (wie früher Text, jetzt Bild) -->
   <div class="logo-wrap">
-    <img
-      src="logo-protrack-horizontal.png"
-      alt="Protrack"
-      class="logo logo-horizontal"
-    />
-    <img
-      src="logo-protrack-small.png"
-      alt="Protrack"
-      class="logo logo-small"
-    />
+    <img src="logo-protrack-horizontal.png" class="logo logo-horizontal" alt="Protrack">
+    <img src="logo-protrack-small.png" class="logo logo-small" alt="Protrack">
   </div>
 
   <div>
@@ -41,7 +36,7 @@
   </div>
 </header>
 
-<!-- LOGIN OVERLAY -->
+<!-- LOGIN -->
 <div id="loginOverlay" class="overlay">
   <div class="login-card">
     <h2>Login</h2>
@@ -58,27 +53,22 @@
   <div class="today-block">
     <span>Noah</span>
     <span id="todayNoahText"></span>
-    <div class="bar">
-      <div id="todayNoah" class="fill blue"></div>
-    </div>
+    <div class="bar"><div id="todayNoah" class="fill"></div></div>
   </div>
 
   <div class="today-block">
     <span>Max</span>
     <span id="todayMaxText"></span>
-    <div class="bar">
-      <div id="todayMax" class="fill green"></div>
-    </div>
+    <div class="bar"><div id="todayMax" class="fill"></div></div>
   </div>
 </section>
 
-<!-- DIESE WOCHE -->
+<!-- WOCHE -->
 <section class="card">
   <h2>Diese Woche</h2>
   <div id="weekChart"></div>
 </section>
 
-<!-- LETZTE WOCHE -->
 <section class="card muted">
   <h2>Letzte Woche</h2>
   <div id="lastWeekChart"></div>
@@ -88,6 +78,7 @@
 <div id="saveBar" class="savebar hidden">
   <input id="proteinInput" type="number" placeholder="g">
   <button id="saveBtn">Speichern</button>
+  <button id="undoBtn">↩︎</button>
 </div>
 
 <script src="app.js"></script>
