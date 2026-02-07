@@ -34,13 +34,25 @@ body.modal-open { overflow: hidden; }
   .logo-small{display:block;height:26px}
 }
 
-.user-name { font-size:14px; color:#6b7280; }
-
-.app-header button {
-  background:none;
-  border:none;
+.user-name {
   font-size:14px;
   color:#6b7280;
+  margin-right:8px;
+}
+
+/* ✅ FIX: LOGIN / LOGOUT BUTTON */
+.app-header button {
+  background:#111;
+  color:#fff;
+  border:none;
+  border-radius:999px;
+  padding:6px 12px;
+  font-size:13px;
+  cursor:pointer;
+}
+
+.app-header button:active {
+  transform:scale(.97);
 }
 
 /* ================= CARDS ================= */
@@ -61,22 +73,21 @@ body.modal-open { overflow: hidden; }
 /* ================= TODAY ================= */
 .today-block { margin-bottom:16px }
 
-.today-label {
-  font-weight:500;
-}
+.today-label { font-weight:500 }
 
-/* 🎨 FARBBEDEUTUNG (WICHTIG) */
 #labelNoah {
-  color:#3b82f6; /* Blau */
+  color:#3b82f6;
   font-weight:700;
 }
 
 #labelMax {
-  color:#22c55e; /* Grün */
+  color:#22c55e;
   font-weight:700;
 }
 
-.today-label.active { text-decoration: underline; }
+.today-label.active {
+  text-decoration: underline;
+}
 
 .last-entry {
   font-size:12px;
@@ -120,7 +131,6 @@ body.modal-open { overflow: hidden; }
   outline:2px solid #3b82f6;
 }
 
-/* 🟢 BALKEN-HÜLLE */
 .week-bar{
   height:6px;
   background:#e5e7eb;
@@ -129,7 +139,6 @@ body.modal-open { overflow: hidden; }
   margin-top:6px;
 }
 
-/* ✅ ABSTAND ZWISCHEN NOAH / MAX */
 .week-bar + .week-bar{
   margin-top:6px;
 }
@@ -140,7 +149,6 @@ body.modal-open { overflow: hidden; }
   transition:width .4s ease;
 }
 
-/* 🎨 FIXE FARBEN */
 .week-fill.noah{ background:#3b82f6 }
 .week-fill.max{ background:#22c55e }
 
