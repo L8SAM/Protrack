@@ -1,5 +1,5 @@
 *, *::before, *::after { box-sizing: border-box; }
-html { -webkit-text-size-adjust: 100%; }
+html { -webkit-text-size-adjust: 100%; overscroll-behavior: contain; }
 
 body {
   margin: 0;
@@ -21,7 +21,7 @@ body {
 }
 
 .logo { display: none; }
-.logo-horizontal { display: block; height: 30px; } /* ⬅️ größer */
+.logo-horizontal { display: block; height: 30px; }
 @media (max-width:480px){
   .logo-horizontal{display:none}
   .logo-small{display:block;height:26px}
@@ -43,13 +43,19 @@ body {
 .card.muted { opacity:.55 }
 
 .today-card {
-  box-shadow:0 10px 26px rgba(0,0,0,.08);
+  box-shadow:0 12px 30px rgba(0,0,0,.1);
 }
 
 /* TODAY */
 .today-block { margin-bottom:16px }
 .today-label { font-weight:500 }
 .today-label.active { font-weight:700 }
+
+.last-entry {
+  font-size:12px;
+  color:#6b7280;
+  margin-top:4px;
+}
 
 .bar {
   margin-top:6px;
@@ -63,8 +69,6 @@ body {
   width:0%;
   transition:width .6s ease, background .3s;
 }
-
-/* Farben */
 .fill.red { background:#ef4444 }
 .fill.yellow { background:#facc15 }
 .fill.green { background:#22c55e }
@@ -76,14 +80,21 @@ body {
   gap:8px;
 }
 .week-day{ font-size:11px; text-align:center }
-.week-day.today{ outline:2px solid #3b82f6; border-radius:8px }
+.week-day.today{
+  outline:2px solid #3b82f6;
+  border-radius:8px;
+}
 .week-bar{
   height:6px;
   background:#e5e7eb;
   border-radius:999px;
   overflow:hidden;
 }
-.week-fill{ height:100%; width:0% }
+.week-fill{
+  height:100%;
+  width:0%;
+  transition:width .4s ease;
+}
 .week-fill.noah{ background:#3b82f6 }
 .week-fill.max{ background:#22c55e }
 
@@ -103,11 +114,17 @@ body {
   width:90px; padding:14px; font-size:16px;
   border-radius:14px; border:1px solid #d1d5db;
 }
+.savebar input.flash { background:#dcfce7; }
 .savebar button{
   padding:14px; border:none; border-radius:14px;
   background:#111; color:#fff;
 }
-#undoBtn{ background:#e5e7eb; color:#111 }
+#undoBtn{
+  background:#e5e7eb;
+  color:#111;
+  opacity:.3;
+  transition:opacity .3s;
+}
 
 /* LOGIN */
 .overlay{
