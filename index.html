@@ -5,7 +5,7 @@
   <title>Protrack</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- PWA / Icons -->
+  <!-- Icons -->
   <link rel="icon" href="icon-192.png">
   <link rel="apple-touch-icon" href="icon-192.png">
   <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png">
@@ -15,7 +15,7 @@
 
   <link rel="stylesheet" href="style.css" />
 
-  <!-- Firebase compat -->
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
@@ -47,23 +47,23 @@
 </div>
 
 <!-- HEUTE -->
-<section class="card">
+<section class="card today-card">
   <h2>Heute</h2>
 
   <div class="today-block">
-    <span>Noah</span>
+    <span class="today-label" id="labelNoah">Noah</span>
     <span id="todayNoahText"></span>
     <div class="bar"><div id="todayNoah" class="fill"></div></div>
   </div>
 
   <div class="today-block">
-    <span>Max</span>
+    <span class="today-label" id="labelMax">Max</span>
     <span id="todayMaxText"></span>
     <div class="bar"><div id="todayMax" class="fill"></div></div>
   </div>
 </section>
 
-<!-- WOCHE -->
+<!-- WEEK -->
 <section class="card">
   <h2>Diese Woche</h2>
   <div id="weekChart"></div>
@@ -80,6 +80,9 @@
   <button id="saveBtn">Speichern</button>
   <button id="undoBtn">↩︎</button>
 </div>
+
+<!-- CONFETTI -->
+<canvas id="confetti"></canvas>
 
 <script src="app.js"></script>
 </body>
