@@ -1,212 +1,39 @@
-*, *::before, *::after { box-sizing: border-box; }
-html {
-  -webkit-text-size-adjust: 100%;
-  overscroll-behavior: contain;
-}
+/* HEUTE – Namensfarben */
+#labelNoah { color:#3b82f6; font-weight:700; } /* Blau */
+#labelMax  { color:#22c55e; font-weight:700; } /* Grün */
 
-body {
-  margin: 0;
-  padding: 16px;
-  padding-bottom: 180px;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont;
-  background: #f2f4f8;
-  color: #111;
-  max-width: 520px;
-  margin-inline: auto;
-}
-
-body.modal-open {
-  overflow: hidden;
-}
-
-/* HEADER */
-.app-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 18px;
-}
-
-.logo { display: none; }
-.logo-horizontal { display: block; height: 30px; }
-@media (max-width:480px){
-  .logo-horizontal{display:none}
-  .logo-small{display:block;height:26px}
-}
-
-.user-name { font-size:14px; color:#6b7280; }
-.app-header button {
-  background:none;
-  border:none;
-  font-size:14px;
-  color:#6b7280;
-}
-
-/* CARDS */
-.card {
-  background:#fff;
-  border-radius:16px;
-  padding:16px;
-  margin-bottom:16px;
-  box-shadow:0 8px 20px rgba(0,0,0,.05);
-}
-.card.muted { opacity:.55 }
-
-.today-card {
-  box-shadow:0 12px 30px rgba(0,0,0,.1);
-}
-
-/* TODAY */
-.today-block { margin-bottom:16px }
-.today-label { font-weight:500 }
-.today-label.active { font-weight:700 }
-
-.last-entry {
-  font-size:12px;
-  color:#6b7280;
-  margin-top:4px;
-}
-
-.bar {
-  margin-top:6px;
-  height:8px;
-  background:#e5e7eb;
-  border-radius:999px;
-  overflow:hidden;
-}
-
-.fill {
-  height:100%;
-  width:0%;
-  transition:width .6s ease, background .3s;
-}
-
-.fill.red { background:#ef4444 }
-.fill.yellow { background:#facc15 }
-.fill.green { background:#22c55e }
-
-/* WEEK */
-#weekChart,#lastWeekChart{
-  display:grid;
-  grid-template-columns:repeat(7,1fr);
-  gap:8px;
-}
-
+/* WEEK VIEW */
 .week-day {
-  font-size:11px;
-  text-align:center;
+  padding:8px;
+  margin-bottom:10px;
+  border-radius:10px;
 }
 
-.week-day.today{
-  outline:2px solid #3b82f6;
-  border-radius:8px;
+.week-day.today {
+  outline:2px solid #111;
 }
 
-.week-bar{
-  height:6px;
+/* Balken-Hülle */
+.week-bar {
+  height:7px;
   background:#e5e7eb;
-  border-radius:999px;
+  border-radius:6px;
+  margin-top:6px;
   overflow:hidden;
 }
 
-.week-fill{
+/* Abstand zwischen Noah & Max */
+.week-bar + .week-bar {
+  margin-top:8px;
+}
+
+/* Balken selbst */
+.week-fill {
   height:100%;
-  width:0%;
-  transition:width .4s ease;
+  border-radius:6px;
+  transition:width .3s ease;
 }
 
-.week-fill.noah{ background:#3b82f6 }
-.week-fill.max{ background:#22c55e }
-
-/* SAVEBAR */
-.savebar{
-  position:fixed;
-  left:12px;
-  right:12px;
-  bottom:12px;
-  display:flex;
-  gap:10px;
-  padding:14px;
-  padding-bottom:calc(14px + env(safe-area-inset-bottom));
-  background:#fff;
-  border-radius:22px;
-  box-shadow:0 12px 30px rgba(0,0,0,.18);
-}
-
-.savebar.hidden{ display:none }
-
-.savebar input{
-  width:90px;
-  padding:14px;
-  font-size:16px;
-  border-radius:14px;
-  border:1px solid #d1d5db;
-}
-
-.savebar input.flash { background:#dcfce7; }
-
-.savebar button{
-  padding:14px;
-  border:none;
-  border-radius:14px;
-  background:#111;
-  color:#fff;
-}
-
-#undoBtn{
-  background:#e5e7eb;
-  color:#111;
-  opacity:.3;
-  transition:opacity .3s;
-}
-
-/* LOGIN OVERLAY – FIX */
-.overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 99999;
-
-  background: rgba(0,0,0,0.45);
-  backdrop-filter: blur(2px);
-  -webkit-backdrop-filter: blur(2px);
-
-  display: none;
-  align-items: center;
-  justify-content: center;
-
-  isolation: isolate;
-}
-
-/* LOGIN CARD */
-.login-card{
-  background:#fff;
-  padding:20px;
-  border-radius:18px;
-  width:90%;
-  max-width:320px;
-}
-
-.login-card input{
-  width:100%;
-  padding:14px;
-  margin-bottom:10px;
-  font-size:16px;
-  border-radius:14px;
-  border:1px solid #d1d5db;
-}
-
-.login-card button{
-  width:100%;
-  padding:14px;
-  border:none;
-  border-radius:14px;
-  background:#111;
-  color:#fff;
-}
-
-/* CONFETTI */
-#confetti{
-  position:fixed;
-  inset:0;
-  pointer-events:none;
-}
+/* Fixe Farben */
+.week-fill.noah { background:#3b82f6; } /* Blau */
+.week-fill.max  { background:#22c55e; } /* Grün */
