@@ -23,6 +23,7 @@ const overlay = document.getElementById("loginOverlay");
 const confirmLogin = document.getElementById("confirmLogin");
 const email = document.getElementById("email");
 const password = document.getElementById("password");
+
 const saveBtn = document.getElementById("saveBtn");
 const input = document.getElementById("proteinInput");
 const userName = document.getElementById("userName");
@@ -64,12 +65,15 @@ onAuthStateChanged(auth, user => {
   }
 });
 
-// ---------------- HEUTE ----------------
+// ---------------- HEUTE (SNAPSHOT = WAHRHEIT) ----------------
 const today = new Date().toISOString().split("T")[0];
 
 onSnapshot(doc(db, "proteinTracker", today), snap => {
   const data = snap.data();
-  if (!data) return;                 // ⛔ nichts überschreiben
+  if (!data) {
+    updateBars(0, 0);
+    return;
+  }
   updateBars(data.Noah ?? 0, data.Max ?? 0);
 });
 
@@ -82,7 +86,7 @@ function startOfWeek(d) {
 }
 
 const monday = startOfWeek(new Date());
-weekChart.innerHTML = ""; // reset
+weekChart.innerHTML = "";
 
 for (let i = 0; i < 7; i++) {
   const d = new Date(monday);
@@ -92,11 +96,7 @@ for (let i = 0; i < 7; i++) {
   const el = document.createElement("div");
   el.className = "week-day";
   el.innerHTML = `
-    ${d.toLocaleDateString("de-DE", {
-      weekday: "short",
-      day: "2-digit",
-      month: "2-digit"
-    })}
+    ${d.toLocaleDateString("de-DE", { weekday: "short", day: "2-digit", month: "2-digit" })}
     <div class="week-bars">
       <div class="week-bar"><div id="n-${id}" class="week-fill" style="background:#3b82f6"></div></div>
       <div class="week-bar"><div id="m-${id}" class="week-fill" style="background:#22c55e"></div></div>
@@ -106,43 +106,34 @@ for (let i = 0; i < 7; i++) {
 
   onSnapshot(doc(db, "proteinTracker", id), snap => {
     const data = snap.data() || {};
-
-    weekValues[id] = {
-      Noah: data.Noah ?? 0,
-      Max: data.Max ?? 0
-    };
+    weekValues[id] = { Noah: data.Noah ?? 0, Max: data.Max ?? 0 };
 
     document.getElementById(`n-${id}`).style.width =
       Math.min(100, (weekValues[id].Noah / TARGET) * 100) + "%";
-
     document.getElementById(`m-${id}`).style.width =
       Math.min(100, (weekValues[id].Max / TARGET) * 100) + "%";
 
     const days = Object.values(weekValues);
     const avg = p =>
-      Math.round(
-        days.reduce((s, d) => s + Math.min(100, (d[p] / TARGET) * 100), 0) /
-        days.length
-      );
+      days.length
+        ? Math.round(days.reduce((s, d) => s + Math.min(100, (d[p] / TARGET) * 100), 0) / days.length)
+        : 0;
 
     avgNoahEl.textContent = avg("Noah") + "%";
     avgMaxEl.textContent = avg("Max") + "%";
   });
 }
 
-// ---------------- SPEICHERN ----------------
+// ---------------- SPEICHERN (SNAPSHOT-ONLY) ----------------
 saveBtn.onclick = async () => {
   if (!currentName) return;
 
   const val = Number(input.value);
   if (!val || val <= 0) return;
 
-  input.value = "";
+  // UX-Schutz
   saveBtn.disabled = true;
-  setTimeout(() => (saveBtn.disabled = false), 800);
-
-  // sofort UI
-  incrementLocal(currentName, val);
+  input.value = "";
 
   try {
     if (navigator.onLine) {
@@ -153,10 +144,12 @@ saveBtn.onclick = async () => {
     }
   } catch (e) {
     console.error(e);
+  } finally {
+    setTimeout(() => (saveBtn.disabled = false), 700);
   }
 };
 
-// ---------------- FIREBASE ----------------
+// ---------------- FIREBASE WRITE (ADDIVITIV) ----------------
 async function saveToFirebase(date, user, val) {
   const ref = doc(db, "proteinTracker", date);
   const snap = await getDoc(ref);
@@ -183,18 +176,4 @@ function updateBars(noah, max) {
   todayMax.style.width = m + "%";
   todayNoahPct.textContent = Math.round(n) + "%";
   todayMaxPct.textContent = Math.round(m) + "%";
-}
-
-function incrementLocal(user, val) {
-  const pct = Math.round((val / TARGET) * 100);
-
-  if (user === "Noah") {
-    const next = Math.min(100, parseInt(todayNoahPct.textContent) + pct);
-    todayNoahPct.textContent = next + "%";
-    todayNoah.style.width = next + "%";
-  } else {
-    const next = Math.min(100, parseInt(todayMaxPct.textContent) + pct);
-    todayMaxPct.textContent = next + "%";
-    todayMax.style.width = next + "%";
-  }
 }
