@@ -7,10 +7,11 @@ import {
 import {
   doc,
   setDoc,
+  getDoc,
   onSnapshot
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
-const TARGET = 150;
+const TARGET = 170;
 
 // ELEMENTE
 const loginBtn = document.getElementById("loginBtn");
@@ -22,6 +23,7 @@ const password = document.getElementById("password");
 const saveBtn = document.getElementById("saveBtn");
 const input = document.getElementById("proteinInput");
 const userName = document.getElementById("userName");
+const saveHint = document.getElementById("saveHint");
 
 const todayNoah = document.getElementById("todayNoah");
 const todayMax = document.getElementById("todayMax");
@@ -29,9 +31,12 @@ const todayNoahPct = document.getElementById("todayNoahPct");
 const todayMaxPct = document.getElementById("todayMaxPct");
 
 const weekChart = document.getElementById("weekChart");
+const avgNoahEl = document.getElementById("avgNoah");
+const avgMaxEl = document.getElementById("avgMax");
 const offlineHint = document.getElementById("offlineHint");
 
 let currentName = null;
+let weekValues = {};
 
 // LOGIN
 loginBtn.onclick = () => overlay.style.display = "flex";
@@ -52,7 +57,7 @@ onAuthStateChanged(auth, user => {
     overlay.style.display = "none";
   } else {
     currentName = null;
-    userName.textContent = "Gast";
+    userName.textContent = "";
     saveBtn.disabled = true;
     loginBtn.style.display = "inline";
     logoutBtn.style.display = "none";
@@ -90,7 +95,11 @@ for (let i = 0; i < 7; i++) {
   const el = document.createElement("div");
   el.className = "week-day";
   el.innerHTML = `
-    ${d.toLocaleDateString("de-DE", { weekday: "short" })}
+    ${d.toLocaleDateString("de-DE", {
+      weekday: "short",
+      day: "2-digit",
+      month: "2-digit"
+    })}
     <div class="week-bars">
       <div class="week-bar"><div id="n-${id}" class="week-fill" style="background:#3b82f6"></div></div>
       <div class="week-bar"><div id="m-${id}" class="week-fill" style="background:#22c55e"></div></div>
@@ -100,26 +109,44 @@ for (let i = 0; i < 7; i++) {
 
   onSnapshot(doc(db, "proteinTracker", id), snap => {
     const data = snap.data() || {};
+
+    weekValues[id] = {
+      Noah: data.Noah ?? 0,
+      Max: data.Max ?? 0
+    };
+
     document.getElementById(`n-${id}`).style.width =
       Math.min(100, ((data.Noah ?? 0) / TARGET) * 100) + "%";
     document.getElementById(`m-${id}`).style.width =
       Math.min(100, ((data.Max ?? 0) / TARGET) * 100) + "%";
+
+    const days = Object.values(weekValues);
+    const avg = p =>
+      Math.round(
+        days.reduce((s, d) => s + Math.min(100, (d[p] / TARGET) * 100), 0) /
+        days.length
+      );
+
+    avgNoahEl.textContent = avg("Noah") + "%";
+    avgMaxEl.textContent = avg("Max") + "%";
   });
 }
 
-// SPEICHERN
+// SPEICHERN (ADDITIV)
 saveBtn.onclick = async () => {
   if (!currentName) return;
   const val = Number(input.value);
   if (!val) return;
 
-  await setDoc(
-    doc(db, "proteinTracker", today),
-    { [currentName]: val },
-    { merge: true }
-  );
+  const ref = doc(db, "proteinTracker", today);
+  const snap = await getDoc(ref);
+  const prev = snap.exists() ? snap.data()[currentName] ?? 0 : 0;
+
+  await setDoc(ref, { [currentName]: prev + val }, { merge: true });
 
   input.value = "";
+  saveHint.style.display = "block";
+  setTimeout(() => saveHint.style.display = "none", 1500);
 };
 
 // OFFLINE
