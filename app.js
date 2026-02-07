@@ -1,109 +1,92 @@
 console.log("APP START");
 
 /* =========================
-   FIREBASE (CDN ONLY)
+   FIREBASE INIT
    ========================= */
 
-importScripts = () => {}; // iOS safety no-op
+firebase.initializeApp({
+  // 🔴 HIER EXAKT DEINE firebaseConfig
+});
 
-const script = src => {
-  const s = document.createElement("script");
-  s.src = src;
-  s.defer = true;
-  document.head.appendChild(s);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+/* =========================
+   DATE (LOKAL, KEIN UTC BUG)
+   ========================= */
+
+function todayId() {
+  const d = new Date();
+  return d.getFullYear() + "-" +
+    String(d.getMonth()+1).padStart(2,"0") + "-" +
+    String(d.getDate()).padStart(2,"0");
+}
+
+const DAY = todayId();
+const TARGET = 170;
+
+/* =========================
+   HELPERS
+   ========================= */
+
+const el = id => document.getElementById(id);
+
+/* =========================
+   LOGIN
+   ========================= */
+
+el("loginBtn").onclick = () => el("loginOverlay").style.display = "flex";
+el("loginOverlay").onclick = e => {
+  if (e.target.id === "loginOverlay") el("loginOverlay").style.display = "none";
 };
 
-script("https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js");
-script("https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js");
-script("https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js");
-
-window.addEventListener("load", () => {
-
-  firebase.initializeApp({
-    // 🔴 DEINE firebaseConfig HIER (wie bisher)
-  });
-
-  const auth = firebase.auth();
-  const db = firebase.firestore();
-
-  /* =========================
-     DATE (LOKAL, UTC-SAFE)
-     ========================= */
-
-  function localDateId(d = new Date()) {
-    return d.getFullYear() + "-" +
-      String(d.getMonth()+1).padStart(2,"0") + "-" +
-      String(d.getDate()).padStart(2,"0");
+el("confirmLogin").onclick = async () => {
+  try {
+    await auth.signInWithEmailAndPassword(
+      el("email").value,
+      el("password").value
+    );
+    el("loginOverlay").style.display = "none";
+  } catch {
+    alert("Login fehlgeschlagen");
   }
+};
 
-  const todayId = localDateId();
-  const TARGET = 170;
+el("logoutBtn").onclick = () => auth.signOut();
 
-  /* =========================
-     LOGIN
-     ========================= */
+auth.onAuthStateChanged(user => {
+  if (user) {
+    el("userName").textContent = user.email;
+    el("loginBtn").style.display = "none";
+    el("logoutBtn").style.display = "inline";
+    el("saveBar").classList.remove("hidden");
+  } else {
+    el("userName").textContent = "";
+    el("loginBtn").style.display = "inline";
+    el("logoutBtn").style.display = "none";
+    el("saveBar").classList.add("hidden");
+  }
+});
 
-  const loginBtn = loginBtnEl();
-  const logoutBtn = el("logoutBtn");
-  const overlay = el("loginOverlay");
-  const userName = el("userName");
+/* =========================
+   TODAY
+   ========================= */
 
-  loginBtn.onclick = () => overlay.style.display = "flex";
-  overlay.onclick = e => { if (e.target === overlay) overlay.style.display = "none"; };
-
-  el("confirmLogin").onclick = async () => {
-    try {
-      await auth.signInWithEmailAndPassword(
-        el("email").value,
-        el("password").value
-      );
-      overlay.style.display = "none";
-    } catch {
-      alert("Login fehlgeschlagen");
-    }
-  };
-
-  logoutBtn.onclick = () => auth.signOut();
-
-  auth.onAuthStateChanged(user => {
-    if (user) {
-      userName.textContent = user.email;
-      loginBtn.style.display = "none";
-      logoutBtn.style.display = "inline";
-      el("saveBar").classList.remove("hidden");
-    } else {
-      userName.textContent = "";
-      loginBtn.style.display = "inline";
-      logoutBtn.style.display = "none";
-      el("saveBar").classList.add("hidden");
-    }
+db.collection("proteinTracker").doc(DAY)
+  .onSnapshot(snap => {
+    const d = snap.exists ? snap.data() : {};
+    el("todayNoah").style.width = Math.min(100, ((d.Noah||0)/TARGET)*100)+"%";
+    el("todayMax").style.width = Math.min(100, ((d.Max||0)/TARGET)*100)+"%";
   });
 
-  /* =========================
-     TODAY SNAPSHOT
-     ========================= */
+/* =========================
+   SAVE
+   ========================= */
 
-  db.collection("proteinTracker").doc(todayId)
-    .onSnapshot(snap => {
-      const d = snap.exists ? snap.data() : {};
-      el("todayNoah").style.width = Math.min(100, ((d.Noah||0)/TARGET)*100) + "%";
-      el("todayMax").style.width = Math.min(100, ((d.Max||0)/TARGET)*100) + "%";
-    });
-
-  /* =========================
-     SAVE
-     ========================= */
-
-  el("saveBtn").onclick = async () => {
-    const v = Number(el("proteinInput").value);
-    if (!v) return;
-    await db.collection("proteinTracker")
-      .doc(todayId)
-      .set({ Noah: v }, { merge: true });
-    el("proteinInput").value = "";
-  };
-
-  function el(id){ return document.getElementById(id); }
-  function loginBtnEl(){ return document.getElementById("loginBtn"); }
-
-});
+el("saveBtn").onclick = async () => {
+  const v = Number(el("proteinInput").value);
+  if (!v) return;
+  await db.collection("proteinTracker").doc(DAY)
+    .set({ Noah: v }, { merge: true });
+  el("proteinInput").value = "";
+};
