@@ -1,3 +1,7 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 :root {
   --bg: #f2f4f8;
   --card: #ffffff;
@@ -34,8 +38,6 @@ body {
 
 .app-logo {
   height: 30px;
-  width: auto;
-  display: block;
 }
 
 @media (max-width: 420px) {
@@ -155,7 +157,7 @@ button:disabled {
   opacity: 0.4;
 }
 
-/* LOGIN OVERLAY */
+/* LOGIN */
 .overlay {
   position: fixed;
   inset: 0;
@@ -171,6 +173,10 @@ button:disabled {
   border-radius: var(--radius);
   width: 90%;
   max-width: 320px;
+}
+
+.login-card input {
+  margin-bottom: 8px;
 }
 
 /* HINT */
