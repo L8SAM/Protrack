@@ -16,7 +16,9 @@ body {
   margin-inline: auto;
 }
 
-body.modal-open { overflow: hidden; }
+body.modal-open {
+  overflow: hidden;
+}
 
 /* ================= HEADER ================= */
 .app-header {
@@ -30,29 +32,21 @@ body.modal-open { overflow: hidden; }
 .logo-horizontal { display: block; height: 30px; }
 
 @media (max-width:480px){
-  .logo-horizontal{display:none}
-  .logo-small{display:block;height:26px}
+  .logo-horizontal { display:none }
+  .logo-small { display:block; height:26px }
 }
 
 .user-name {
   font-size:14px;
   color:#6b7280;
-  margin-right:8px;
 }
 
-/* ✅ FIX: LOGIN / LOGOUT BUTTON */
+/* ⚠️ ORIGINAL: Header-Buttons bewusst schlicht */
 .app-header button {
-  background:#111;
-  color:#fff;
+  background:none;
   border:none;
-  border-radius:999px;
-  padding:6px 12px;
-  font-size:13px;
-  cursor:pointer;
-}
-
-.app-header button:active {
-  transform:scale(.97);
+  font-size:14px;
+  color:#6b7280;
 }
 
 /* ================= CARDS ================= */
@@ -73,20 +67,12 @@ body.modal-open { overflow: hidden; }
 /* ================= TODAY ================= */
 .today-block { margin-bottom:16px }
 
-.today-label { font-weight:500 }
-
-#labelNoah {
-  color:#3b82f6;
-  font-weight:700;
-}
-
-#labelMax {
-  color:#22c55e;
-  font-weight:700;
+.today-label {
+  font-weight:500;
 }
 
 .today-label.active {
-  text-decoration: underline;
+  font-weight:700;
 }
 
 .last-entry {
@@ -123,12 +109,11 @@ body.modal-open { overflow: hidden; }
 .week-day {
   font-size:11px;
   text-align:center;
-  padding:6px 4px;
-  border-radius:8px;
 }
 
 .week-day.today{
   outline:2px solid #3b82f6;
+  border-radius:8px;
 }
 
 .week-bar{
@@ -136,11 +121,6 @@ body.modal-open { overflow: hidden; }
   background:#e5e7eb;
   border-radius:999px;
   overflow:hidden;
-  margin-top:6px;
-}
-
-.week-bar + .week-bar{
-  margin-top:6px;
 }
 
 .week-fill{
@@ -149,8 +129,8 @@ body.modal-open { overflow: hidden; }
   transition:width .4s ease;
 }
 
-.week-fill.noah{ background:#3b82f6 }
-.week-fill.max{ background:#22c55e }
+.week-fill.noah { background:#3b82f6 }
+.week-fill.max  { background:#22c55e }
 
 /* ================= SAVEBAR ================= */
 .savebar{
@@ -177,7 +157,9 @@ body.modal-open { overflow: hidden; }
   border:1px solid #d1d5db;
 }
 
-.savebar input.flash { background:#dcfce7; }
+.savebar input.flash {
+  background:#dcfce7;
+}
 
 .savebar button{
   padding:14px;
