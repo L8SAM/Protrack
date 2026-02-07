@@ -1,55 +1,117 @@
+/* =========================
+   RESET & GLOBAL
+   ========================= */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
 body {
   margin: 0;
   padding: 16px;
-  padding-bottom: 160px;
-  font-family: system-ui;
+  padding-bottom: 180px; /* Platz für Sticky Savebar */
+  font-family: system-ui, -apple-system, BlinkMacSystemFont;
   background: #f2f4f8;
+  color: #111;
+  max-width: 520px;
+  margin-inline: auto;
 }
 
-/* CARDS */
-.card {
-  background: white;
-  padding: 16px;
-  border-radius: 16px;
+/* =========================
+   HEADER
+   ========================= */
+
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 16px;
+}
+
+.user-name {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.app-header button {
+  background: none;
+  border: none;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+/* =========================
+   CARDS
+   ========================= */
+
+.card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.05);
 }
 
 .card.muted {
   background: #f8fafc;
-  opacity: 0.7;
+  opacity: 0.6;
 }
 
-/* TODAY */
+/* =========================
+   HEUTE
+   ========================= */
+
 .today-block {
-  margin-bottom: 12px;
+  margin-bottom: 14px;
+}
+
+.today-block span {
+  font-size: 14px;
 }
 
 .bar {
+  margin-top: 6px;
   height: 8px;
   background: #e5e7eb;
   border-radius: 999px;
+  overflow: hidden;
 }
 
 .fill {
   height: 100%;
   width: 0%;
+  transition: width 0.3s ease;
 }
 
-.blue { background: #3b82f6; }
-.green { background: #22c55e; }
+.blue {
+  background: #3b82f6;
+}
 
-/* WEEK */
-#weekChart, #lastWeekChart {
+.green {
+  background: #22c55e;
+}
+
+/* =========================
+   WOCHE & LETZTE WOCHE
+   ========================= */
+
+#weekChart,
+#lastWeekChart {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 8px;
 }
 
 .week-day {
-  font-size: 11px;
   text-align: center;
-  padding: 6px;
-  border-radius: 8px;
+  font-size: 11px;
+  padding: 6px 4px;
+  border-radius: 10px;
+  background: transparent;
 }
 
 .week-day.today {
@@ -57,37 +119,142 @@ body {
   border: 1px solid #38bdf8;
 }
 
-/* SAVEBAR */
+.week-day.past {
+  opacity: 0.45;
+}
+
+.week-label {
+  margin-bottom: 4px;
+}
+
+.week-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.week-bar {
+  height: 6px;
+  background: #e5e7eb;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.week-fill {
+  height: 100%;
+  width: 0%;
+  transition: width 0.25s ease;
+}
+
+.week-fill.noah {
+  background: #3b82f6;
+}
+
+.week-fill.max {
+  background: #22c55e;
+}
+
+/* =========================
+   STICKY SAVEBAR (iPhone safe)
+   ========================= */
+
 .savebar {
   position: fixed;
   left: 12px;
   right: 12px;
   bottom: 12px;
-  background: white;
-  padding: 12px;
-  border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  z-index: 1000;
+
+  display: flex;
+  gap: 10px;
+
+  padding: 14px;
+  padding-bottom: calc(14px + env(safe-area-inset-bottom));
+
+  background: #ffffff;
+  border-radius: 22px;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.18);
 }
 
 .savebar.hidden {
   display: none;
 }
 
-/* LOGIN */
+.savebar input {
+  width: 90px;
+  padding: 14px;
+  font-size: 16px; /* iOS Zoom Fix */
+  border-radius: 14px;
+  border: 1px solid #d1d5db;
+}
+
+.savebar button {
+  flex: 1;
+  padding: 14px;
+  border: none;
+  border-radius: 14px;
+  background: #111111;
+  color: #ffffff;
+  font-size: 15px;
+}
+
+.savebar button:disabled {
+  opacity: 0.4;
+}
+
+/* =========================
+   LOGIN OVERLAY
+   ========================= */
+
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.5);
+  z-index: 9999;
+
+  background: rgba(0,0,0,0.45);
+
   display: none;
   align-items: center;
   justify-content: center;
-  z-index: 9999;
 }
 
 .login-card {
-  background: white;
+  background: #ffffff;
   padding: 20px;
-  border-radius: 16px;
+  border-radius: 18px;
   width: 90%;
   max-width: 320px;
+}
+
+.login-card h2 {
+  margin-top: 0;
+}
+
+.login-card input {
+  width: 100%;
+  padding: 14px;
+  margin-bottom: 10px;
+  font-size: 16px; /* iOS Zoom Fix */
+  border-radius: 14px;
+  border: 1px solid #d1d5db;
+}
+
+.login-card button {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 14px;
+  background: #111111;
+  color: #ffffff;
+  font-size: 15px;
+}
+
+/* =========================
+   HINTS / TEXT
+   ========================= */
+
+.hint {
+  font-size: 13px;
+  color: #6b7280;
+  text-align: center;
 }
