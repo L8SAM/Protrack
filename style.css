@@ -32,9 +32,16 @@ body {
   margin-bottom: 16px;
 }
 
+#logo {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
 .user-name {
-  font-size: 14px;
+  font-size: 13px;
   color: #6b7280;
+  margin-right: 8px;
 }
 
 .app-header button {
@@ -42,6 +49,7 @@ body {
   border: none;
   font-size: 14px;
   color: #6b7280;
+  padding: 6px 8px;
 }
 
 /* =========================
@@ -111,7 +119,6 @@ body {
   font-size: 11px;
   padding: 6px 4px;
   border-radius: 10px;
-  background: transparent;
 }
 
 .week-day.today {
@@ -155,7 +162,7 @@ body {
 }
 
 /* =========================
-   STICKY SAVEBAR (iPhone safe)
+   STICKY SAVEBAR (iOS-safe)
    ========================= */
 
 .savebar {
@@ -198,10 +205,6 @@ body {
   font-size: 15px;
 }
 
-.savebar button:disabled {
-  opacity: 0.4;
-}
-
 /* =========================
    LOGIN OVERLAY
    ========================= */
@@ -210,7 +213,6 @@ body {
   position: fixed;
   inset: 0;
   z-index: 9999;
-
   background: rgba(0,0,0,0.45);
 
   display: none;
@@ -234,7 +236,7 @@ body {
   width: 100%;
   padding: 14px;
   margin-bottom: 10px;
-  font-size: 16px; /* iOS Zoom Fix */
+  font-size: 16px;
   border-radius: 14px;
   border: 1px solid #d1d5db;
 }
@@ -247,14 +249,4 @@ body {
   background: #111111;
   color: #ffffff;
   font-size: 15px;
-}
-
-/* =========================
-   HINTS / TEXT
-   ========================= */
-
-.hint {
-  font-size: 13px;
-  color: #6b7280;
-  text-align: center;
 }
