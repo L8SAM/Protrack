@@ -17,10 +17,15 @@ const confirmLogin = document.getElementById("confirmLogin");
 const email = document.getElementById("email");
 const password = document.getElementById("password");
 
+const saveBar = document.getElementById("saveBar");
 const saveBtn = document.getElementById("saveBtn");
 const input = document.getElementById("proteinInput");
+const undoBar = document.getElementById("undoBar");
+const undoBtn = document.getElementById("undoBtn");
+
 const userName = document.getElementById("userName");
 const offlineHint = document.getElementById("offlineHint");
+const eveningHint = document.getElementById("eveningHint");
 
 const todayNoah = document.getElementById("todayNoah");
 const todayMax = document.getElementById("todayMax");
@@ -28,6 +33,7 @@ const todayNoahText = document.getElementById("todayNoahText");
 const todayMaxText = document.getElementById("todayMaxText");
 
 let currentName = null;
+let lastEntry = null;
 let goalReached = { Noah:false, Max:false };
 
 // LOGIN
@@ -41,24 +47,25 @@ onAuthStateChanged(auth, user => {
   if (user) {
     currentName = user.email.startsWith("noah") ? "Noah" : "Max";
     userName.textContent = currentName;
-    saveBtn.disabled = false;
+    saveBar.classList.remove("hidden");
     loginBtn.style.display = "none";
     logoutBtn.style.display = "inline";
     overlay.style.display = "none";
   } else {
-    saveBtn.disabled = true;
+    saveBar.classList.add("hidden");
     loginBtn.style.display = "inline";
     logoutBtn.style.display = "none";
   }
 });
 
-// HEUTE
+// SNAPSHOT HEUTE
 const today = new Date().toISOString().split("T")[0];
 
 onSnapshot(doc(db, "proteinTracker", today), snap => {
   const data = snap.data() || {};
   renderToday("Noah", data.Noah ?? 0);
   renderToday("Max", data.Max ?? 0);
+  updateEveningHint(data[currentName] ?? 0);
 });
 
 function renderToday(name, grams) {
@@ -69,6 +76,9 @@ function renderToday(name, grams) {
   const text = name === "Noah" ? todayNoahText : todayMaxText;
 
   bar.style.width = barPct + "%";
+  bar.className = "today-fill " +
+    (pct > 100 ? "gold" : name === "Noah" ? "blue" : "green");
+
   text.textContent = `${pct}% · ${grams} g / ${TARGET} g`;
 
   if (grams >= TARGET && !goalReached[name]) {
@@ -77,15 +87,28 @@ function renderToday(name, grams) {
   }
 }
 
+// LIVE PREVIEW
+input.oninput = () => {
+  const val = Number(input.value);
+  if (!val || !currentName) {
+    saveBtn.textContent = "Eintragen";
+    return;
+  }
+  saveBtn.textContent = `+${val} g speichern`;
+};
+
 // SPEICHERN
 saveBtn.onclick = async () => {
   const val = Number(input.value);
   if (!val) return;
 
+  if (val > 300 && !confirm(`Meintest du wirklich ${val} g?`)) return;
+
   if (navigator.vibrate) navigator.vibrate(15);
 
-  saveBtn.disabled = true;
+  lastEntry = val;
   input.value = "";
+  saveBtn.textContent = "Eintragen";
 
   try {
     if (navigator.onLine) {
@@ -95,10 +118,34 @@ saveBtn.onclick = async () => {
       offlineHint.style.display = "block";
     }
   } finally {
-    setTimeout(() => saveBtn.disabled = false, 700);
+    showUndo();
   }
 };
 
+function showUndo() {
+  undoBar.classList.remove("hidden");
+  setTimeout(() => undoBar.classList.add("hidden"), 5000);
+}
+
+undoBtn.onclick = async () => {
+  if (!lastEntry) return;
+  await saveToFirebase(today, currentName, -lastEntry);
+  lastEntry = null;
+  undoBar.classList.add("hidden");
+};
+
+// EVENING HINT
+function updateEveningHint(grams) {
+  const hour = new Date().getHours();
+  if (hour >= 19 && grams < TARGET) {
+    eveningHint.style.display = "block";
+    eveningHint.textContent = `Noch ${TARGET - grams} g bis zum Ziel`;
+  } else {
+    eveningHint.style.display = "none";
+  }
+}
+
+// FIREBASE WRITE
 async function saveToFirebase(date, user, val) {
   const ref = doc(db, "proteinTracker", date);
   const snap = await getDoc(ref);
