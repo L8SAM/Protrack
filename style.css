@@ -1,4 +1,14 @@
-*, *::before, *::after { box-sizing: border-box; }
+/* =========================
+   GLOBAL / RESET
+   ========================= */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%; /* verhindert iOS Auto-Zoom */
+}
 
 :root {
   --bg: #f2f4f8;
@@ -20,18 +30,49 @@ body {
   margin-inline: auto;
 }
 
-/* HEADER */
+/* =========================
+   HEADER
+   ========================= */
+
 .app-header {
-  display: flex; justify-content: space-between; align-items: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 12px;
 }
-.header-left { display: flex; align-items: center; gap: 12px; }
-.app-logo { height: 30px; }
-@media (max-width:420px){ .app-logo{height:24px;} }
-.user-name { font-size: 14px; color: var(--muted); }
-.header-right button { background:none; border:none; font-size:14px; color:var(--muted); }
 
-/* CARDS */
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.app-logo {
+  height: 30px;
+}
+
+@media (max-width: 420px) {
+  .app-logo {
+    height: 24px;
+  }
+}
+
+.user-name {
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.header-right button {
+  background: none;
+  border: none;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+/* =========================
+   CARDS
+   ========================= */
+
 .card {
   background: var(--card);
   border-radius: var(--radius);
@@ -40,40 +81,150 @@ body {
   box-shadow: 0 8px 20px rgba(0,0,0,0.05);
 }
 
-/* HEUTE */
+/* =========================
+   HEUTE
+   ========================= */
+
 .today-row {
-  display:grid; grid-template-columns:50px 1fr 40px; gap:8px; align-items:center;
-  margin-bottom:10px;
+  display: grid;
+  grid-template-columns: 50px 1fr 40px;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
 }
-.label { font-size:13px; font-weight:600; }
-.blue{color:var(--blue);} .green{color:var(--green);}
-.bar{height:8px; background:#e5e7eb; border-radius:999px; overflow:hidden;}
-.fill{height:100%; width:0%; transition:width .25s ease;}
-.fill.blue{background:var(--blue);} .fill.green{background:var(--green);}
-.pct{font-size:12px; color:var(--muted); text-align:right;}
 
-/* WOCHE */
-#weekChart{display:grid; grid-template-columns:repeat(7,1fr); gap:6px;}
-.week-day{font-size:11px; text-align:center;}
-.week-bars{margin-top:4px; display:flex; flex-direction:column; gap:4px;}
-.week-bar{height:6px; background:#e5e7eb; border-radius:999px; overflow:hidden;}
-.week-fill{height:100%; width:0%; transition:width .25s ease;}
-
-/* INPUT – FINAL */
-.input-row{display:flex; gap:10px; align-items:center;}
-input[type="number"]{
-  width: 90px; max-width: 90px;
-  padding:14px; border-radius:14px; border:1px solid #ddd; font-size:16px;
+.label {
+  font-size: 13px;
+  font-weight: 600;
 }
-button{
-  flex:1; padding:14px; border-radius:14px; border:none;
-  background:#111; color:#fff; font-size:15px;
+
+.blue { color: var(--blue); }
+.green { color: var(--green); }
+
+.bar {
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 999px;
+  overflow: hidden;
 }
-button:disabled{opacity:.4;}
 
-/* LOGIN */
-.overlay{position:fixed; inset:0; background:rgba(0,0,0,.4); display:none; align-items:center; justify-content:center;}
-.login-card{background:#fff; padding:20px; border-radius:var(--radius); width:90%; max-width:320px;}
-.login-card input{margin-bottom:8px;}
+.fill {
+  height: 100%;
+  width: 0%;
+  transition: width 0.25s ease;
+}
 
-.hint{font-size:13px; color:var(--muted);}
+.fill.blue { background: var(--blue); }
+.fill.green { background: var(--green); }
+
+.pct {
+  font-size: 12px;
+  color: var(--muted);
+  text-align: right;
+}
+
+/* =========================
+   WOCHE
+   ========================= */
+
+#weekChart {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+
+.week-day {
+  font-size: 11px;
+  text-align: center;
+}
+
+.week-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.week-bar {
+  height: 6px;
+  background: #e5e7eb;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.week-fill {
+  height: 100%;
+  width: 0%;
+  transition: width 0.25s ease;
+}
+
+/* =========================
+   INPUT / UX  (iOS SAFE)
+   ========================= */
+
+.input-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+/* 🔥 WICHTIG: font-size >= 16px → kein iOS Zoom */
+input[type="number"],
+input[type="email"],
+input[type="password"] {
+  width: 90px;
+  max-width: 90px;
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid #ddd;
+  font-size: 16px;                 /* ← iOS Zoom Fix */
+  -webkit-text-size-adjust: 100%;
+}
+
+button {
+  flex: 1;
+  padding: 14px;
+  border-radius: 14px;
+  border: none;
+  background: #111;
+  color: #fff;
+  font-size: 15px;
+}
+
+button:disabled {
+  opacity: 0.4;
+}
+
+/* =========================
+   LOGIN
+   ========================= */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-card {
+  background: #fff;
+  padding: 20px;
+  border-radius: var(--radius);
+  width: 90%;
+  max-width: 320px;
+}
+
+.login-card input {
+  margin-bottom: 8px;
+}
+
+/* =========================
+   HINTS
+   ========================= */
+
+.hint {
+  font-size: 13px;
+  color: var(--muted);
+}
