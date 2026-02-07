@@ -23,7 +23,7 @@
   <div class="header-left">
     <picture>
       <source media="(max-width:420px)" srcset="logo-protrack-small.png">
-      <img src="logo-protrack-horizontal.png" class="app-logo" />
+      <img src="logo-protrack-horizontal.png" class="app-logo" alt="Protrack">
     </picture>
     <span id="userName" class="user-name"></span>
   </div>
@@ -35,9 +35,10 @@
 </header>
 
 <p id="offlineHint" class="hint" style="display:none;">
-  ⚠️ Offline – Einträge werden später synchronisiert
+  ⚠️ Offline – wird später synchronisiert
 </p>
 
+<!-- LOGIN -->
 <div id="loginOverlay" class="overlay">
   <div class="login-card">
     <h2>Login</h2>
@@ -47,6 +48,7 @@
   </div>
 </div>
 
+<!-- HEUTE -->
 <section class="card">
   <h2>Heute</h2>
 
@@ -63,6 +65,17 @@
   </div>
 </section>
 
+<!-- WOCHE -->
+<section class="card">
+  <h2>Diese Woche</h2>
+  <div id="weekChart"></div>
+  <p class="hint">
+    Ø Woche – Noah: <span id="avgNoah">0%</span> ·
+    Max: <span id="avgMax">0%</span>
+  </p>
+</section>
+
+<!-- INPUT -->
 <section class="card">
   <h2>Heute eintragen</h2>
 
