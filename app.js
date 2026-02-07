@@ -1,3 +1,18 @@
-alert("JS OK – vor Firebase");
+alert("1️⃣ JS gestartet");
 
-console.log("Firebase vorhanden?", typeof firebase);
+if (typeof firebase === "undefined") {
+  alert("❌ Firebase undefined");
+} else {
+  alert("✅ Firebase vorhanden");
+}
+
+/* TEST: NUR INIT */
+try {
+  firebase.initializeApp({
+    apiKey: "TEST",
+    projectId: "TEST"
+  });
+  alert("✅ firebase.initializeApp OK");
+} catch (e) {
+  alert("❌ INIT FEHLER: " + e.message);
+}
