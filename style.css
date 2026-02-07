@@ -1,156 +1,93 @@
-*, *::before, *::after { box-sizing: border-box; }
-html { -webkit-text-size-adjust: 100%; }
-
-:root {
-  --bg:#f2f4f8;
-  --card:#fff;
-  --text:#111;
-  --muted:#6b7280;
-  --blue:#3b82f6;
-  --green:#22c55e;
-  --gold:#f59e0b;
-  --radius:16px;
-}
-
 body {
-  margin:0;
-  padding:16px;
-  padding-bottom:160px; /* 🔥 mehr Platz für Savebar */
-  background:var(--bg);
-  font-family:system-ui,-apple-system;
-  max-width:520px;
-  margin-inline:auto;
+  margin: 0;
+  padding: 16px;
+  padding-bottom: 160px;
+  font-family: system-ui;
+  background: #f2f4f8;
 }
-
-/* HEADER */
-.app-header {
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:12px;
-}
-.header-left { display:flex; align-items:center; gap:12px; }
-.app-logo { height:28px; }
-.user-name { font-size:14px; color:var(--muted); }
-.header-right button { background:none; border:none; color:var(--muted); }
 
 /* CARDS */
 .card {
-  background:var(--card);
-  border-radius:var(--radius);
-  padding:16px;
-  margin-bottom:16px;
-  box-shadow:0 8px 20px rgba(0,0,0,.05);
+  background: white;
+  padding: 16px;
+  border-radius: 16px;
+  margin-bottom: 16px;
 }
-.card.secondary {
-  background:#fafafa;
+
+.card.muted {
+  background: #f8fafc;
+  opacity: 0.7;
 }
 
 /* TODAY */
-.today-person { margin-bottom:16px; }
-.today-header {
-  display:flex;
-  justify-content:space-between;
-  font-size:14px;
-  margin-bottom:6px;
+.today-block {
+  margin-bottom: 12px;
 }
-.today-value { color:var(--muted); }
-.today-bar {
-  height:10px;
-  background:#e5e7eb;
-  border-radius:999px;
-  overflow:hidden;
+
+.bar {
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 999px;
 }
-.today-fill {
-  height:100%;
-  width:0%;
-  transition:width .3s ease;
+
+.fill {
+  height: 100%;
+  width: 0%;
 }
-.today-fill.blue { background:var(--blue); }
-.today-fill.green { background:var(--green); }
-.today-fill.gold { background:var(--gold); }
+
+.blue { background: #3b82f6; }
+.green { background: #22c55e; }
 
 /* WEEK */
-#weekChart,
-#lastWeekChart {
-  display:grid;
-  grid-template-columns:repeat(7,1fr);
-  gap:8px;
+#weekChart, #lastWeekChart {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
 }
 
 .week-day {
-  text-align:center;
-  font-size:11px;
+  font-size: 11px;
+  text-align: center;
+  padding: 6px;
+  border-radius: 8px;
 }
 
-.week-bars {
-  margin-top:4px;
-  display:flex;
-  flex-direction:column;
-  gap:4px;
+.week-day.today {
+  background: #e0f2fe;
+  border: 1px solid #38bdf8;
 }
 
-.week-bar {
-  height:6px;
-  background:#e5e7eb;
-  border-radius:999px;
-  overflow:hidden;
-}
-
-.week-fill {
-  height:100%;
-  width:0%;
-  transition:width .25s ease;
-}
-
-/* SAVE BAR */
+/* SAVEBAR */
 .savebar {
-  position:fixed;
-  left:12px;
-  right:12px;
-  bottom:12px;
-  padding:12px;
-  display:flex;
-  gap:10px;
-  background:#fff;
-  border-radius:18px;
-  box-shadow:0 10px 30px rgba(0,0,0,.15);
-  padding-bottom:calc(12px + env(safe-area-inset-bottom));
+  position: fixed;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  background: white;
+  padding: 12px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
 }
 
-.savebar.hidden { display:none; }
-
-.savebar input {
-  width:90px;
-  padding:14px;
-  font-size:16px;
-  border-radius:14px;
-  border:1px solid #ddd;
+.savebar.hidden {
+  display: none;
 }
 
-.savebar button {
-  flex:1;
-  padding:14px;
-  border:none;
-  border-radius:14px;
-  background:#111;
-  color:#fff;
+/* LOGIN */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
 }
 
-/* UNDO */
-.undo-bar {
-  position:fixed;
-  left:16px;
-  right:16px;
-  bottom:100px;
-  background:#111;
-  color:#fff;
-  padding:12px;
-  border-radius:12px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
+.login-card {
+  background: white;
+  padding: 20px;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 320px;
 }
-.undo-bar.hidden { display:none; }
-
-.hint { font-size:13px; color:var(--muted); }
