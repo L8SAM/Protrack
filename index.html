@@ -18,21 +18,17 @@
 
   <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
 
 <header class="app-header">
   <div class="header-left">
-    <!-- LOGO -->
     <picture>
       <source media="(max-width: 420px)" srcset="logo-protrack-small.png">
-      <img
-        src="logo-protrack-horizontal.png"
-        alt="Protrack"
-        class="app-logo"
-      />
+      <img src="logo-protrack-horizontal.png" alt="Protrack" class="app-logo" />
     </picture>
 
-    <span id="userName" class="user-name">Gast</span>
+    <span id="userName" class="user-name"></span>
   </div>
 
   <div class="header-right">
@@ -76,6 +72,11 @@
 <section class="card">
   <h2>Diese Woche</h2>
   <div id="weekChart"></div>
+
+  <p class="hint">
+    Ø Woche – Noah: <span id="avgNoah">0%</span> ·
+    Max: <span id="avgMax">0%</span>
+  </p>
 </section>
 
 <!-- INPUT -->
@@ -88,7 +89,12 @@
     inputmode="numeric"
   />
   <button id="saveBtn" disabled>Speichern</button>
+  <p id="saveHint" class="hint" style="display:none;">✔️ Gespeichert</p>
 </section>
+
+<footer class="hint" style="text-align:center; margin-bottom:12px;">
+  Zielwert: 2 g Protein pro kg Körpergewicht ≈ <strong>170 g</strong>
+</footer>
 
 <script type="module" src="app.js"></script>
 </body>
