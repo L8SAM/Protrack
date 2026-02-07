@@ -68,6 +68,8 @@
       <div id="todayMax" class="today-fill green"></div>
     </div>
   </div>
+
+  <p id="eveningHint" class="hint" style="display:none;"></p>
 </section>
 
 <!-- WOCHE -->
@@ -80,15 +82,15 @@
   </p>
 </section>
 
-<!-- INPUT -->
-<section class="card">
-  <h2>Heute eintragen</h2>
+<!-- STICKY SAVEBAR -->
+<div id="saveBar" class="savebar hidden">
+  <input id="proteinInput" type="number" placeholder="g" min="1" inputmode="numeric">
+  <button id="saveBtn">Eintragen</button>
+</div>
 
-  <div class="input-row">
-    <input id="proteinInput" type="number" placeholder="g" min="1" inputmode="numeric">
-    <button id="saveBtn" disabled>Speichern</button>
-  </div>
-</section>
+<div id="undoBar" class="undo-bar hidden">
+  ✓ Gespeichert <button id="undoBtn">Rückgängig</button>
+</div>
 
 <footer class="hint" style="text-align:center">
   Zielwert: 2 g Protein pro kg Körpergewicht ≈ <strong>170 g</strong>
