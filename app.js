@@ -1,18 +1,11 @@
 import { db, auth } from "./firebase.js";
 import { addOfflineEntry, getOfflineEntries, clearOfflineEntries } from "./offline-db.js";
 
-import {
-  signInWithEmailAndPassword,
-  onAuthStateChanged,
-  signOut
-} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+import { signInWithEmailAndPassword, onAuthStateChanged, signOut }
+from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 
-import {
-  doc,
-  setDoc,
-  getDoc,
-  onSnapshot
-} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+import { doc, setDoc, getDoc, onSnapshot }
+from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
 const TARGET = 170;
 
@@ -31,17 +24,13 @@ const offlineHint = document.getElementById("offlineHint");
 
 const todayNoah = document.getElementById("todayNoah");
 const todayMax = document.getElementById("todayMax");
-const todayNoahPct = document.getElementById("todayNoahPct");
-const todayMaxPct = document.getElementById("todayMaxPct");
-
-const weekChart = document.getElementById("weekChart");
-const avgNoahEl = document.getElementById("avgNoah");
-const avgMaxEl = document.getElementById("avgMax");
+const todayNoahText = document.getElementById("todayNoahText");
+const todayMaxText = document.getElementById("todayMaxText");
 
 let currentName = null;
-let weekValues = {};
+let goalReached = { Noah:false, Max:false };
 
-// ---------------- LOGIN ----------------
+// LOGIN
 loginBtn.onclick = () => overlay.style.display = "flex";
 overlay.onclick = e => e.target === overlay && (overlay.style.display = "none");
 confirmLogin.onclick = () =>
@@ -57,86 +46,44 @@ onAuthStateChanged(auth, user => {
     logoutBtn.style.display = "inline";
     overlay.style.display = "none";
   } else {
-    currentName = null;
-    userName.textContent = "";
     saveBtn.disabled = true;
     loginBtn.style.display = "inline";
     logoutBtn.style.display = "none";
   }
 });
 
-// ---------------- HEUTE (SNAPSHOT = WAHRHEIT) ----------------
+// HEUTE
 const today = new Date().toISOString().split("T")[0];
 
 onSnapshot(doc(db, "proteinTracker", today), snap => {
-  const data = snap.data();
-  if (!data) {
-    updateBars(0, 0);
-    return;
-  }
-  updateBars(data.Noah ?? 0, data.Max ?? 0);
+  const data = snap.data() || {};
+  renderToday("Noah", data.Noah ?? 0);
+  renderToday("Max", data.Max ?? 0);
 });
 
-// ---------------- WOCHE ----------------
-function startOfWeek(d) {
-  const date = new Date(d);
-  const day = date.getDay() || 7;
-  date.setDate(date.getDate() - day + 1);
-  return date;
-}
+function renderToday(name, grams) {
+  const pct = Math.round((grams / TARGET) * 100);
+  const barPct = Math.min(100, pct);
 
-const monday = startOfWeek(new Date());
-weekChart.innerHTML = "";
+  const bar = name === "Noah" ? todayNoah : todayMax;
+  const text = name === "Noah" ? todayNoahText : todayMaxText;
 
-for (let i = 0; i < 7; i++) {
-  const d = new Date(monday);
-  d.setDate(monday.getDate() + i);
-  const id = d.toISOString().split("T")[0];
+  bar.style.width = barPct + "%";
+  text.textContent = `${pct}% · ${grams} g / ${TARGET} g`;
 
-  const el = document.createElement("div");
-  el.className = "week-day";
-  el.innerHTML = `
-    ${d.toLocaleDateString("de-DE", { weekday: "short", day: "2-digit", month: "2-digit" })}
-    <div class="week-bars">
-      <div class="week-bar"><div id="n-${id}" class="week-fill" style="background:#3b82f6"></div></div>
-      <div class="week-bar"><div id="m-${id}" class="week-fill" style="background:#22c55e"></div></div>
-    </div>
-  `;
-  weekChart.appendChild(el);
-
-  onSnapshot(doc(db, "proteinTracker", id), snap => {
-    const data = snap.data() || {};
-    weekValues[id] = { Noah: data.Noah ?? 0, Max: data.Max ?? 0 };
-
-    document.getElementById(`n-${id}`).style.width =
-      Math.min(100, (weekValues[id].Noah / TARGET) * 100) + "%";
-    document.getElementById(`m-${id}`).style.width =
-      Math.min(100, (weekValues[id].Max / TARGET) * 100) + "%";
-
-    const days = Object.values(weekValues);
-    const avg = p =>
-      days.length
-        ? Math.round(days.reduce((s, d) => s + Math.min(100, (d[p] / TARGET) * 100), 0) / days.length)
-        : 0;
-
-    avgNoahEl.textContent = avg("Noah") + "%";
-    avgMaxEl.textContent = avg("Max") + "%";
-  });
-}
-
-// ---------------- SPEICHERN (SNAPSHOT-ONLY) ----------------
-saveBtn.onclick = async () => {
-  if (!currentName) return;
-
-  const val = Number(input.value);
-  if (!val || val <= 0) return;
-
-  // 📳 HAPTIC FEEDBACK (iOS + Android)
-  if (navigator.vibrate) {
-    navigator.vibrate(15); // kurzer, cleaner Tap
+  if (grams >= TARGET && !goalReached[name]) {
+    goalReached[name] = true;
+    if (navigator.vibrate) navigator.vibrate([20,40,20]);
   }
+}
 
-  // UX Schutz
+// SPEICHERN
+saveBtn.onclick = async () => {
+  const val = Number(input.value);
+  if (!val) return;
+
+  if (navigator.vibrate) navigator.vibrate(15);
+
   saveBtn.disabled = true;
   input.value = "";
 
@@ -147,16 +94,11 @@ saveBtn.onclick = async () => {
       await addOfflineEntry({ date: today, user: currentName, value: val });
       offlineHint.style.display = "block";
     }
-  } catch (e) {
-    console.error(e);
   } finally {
-    setTimeout(() => {
-      saveBtn.disabled = false;
-    }, 700);
+    setTimeout(() => saveBtn.disabled = false, 700);
   }
 };
 
-// ---------------- FIREBASE WRITE (ADDIVITIV) ----------------
 async function saveToFirebase(date, user, val) {
   const ref = doc(db, "proteinTracker", date);
   const snap = await getDoc(ref);
@@ -164,7 +106,7 @@ async function saveToFirebase(date, user, val) {
   await setDoc(ref, { [user]: prev + val }, { merge: true });
 }
 
-// ---------------- OFFLINE SYNC ----------------
+// OFFLINE SYNC
 window.addEventListener("online", async () => {
   offlineHint.style.display = "none";
   const entries = await getOfflineEntries();
@@ -173,14 +115,3 @@ window.addEventListener("online", async () => {
   }
   if (entries.length) await clearOfflineEntries();
 });
-
-// ---------------- UI HELPERS ----------------
-function updateBars(noah, max) {
-  const n = Math.min(100, (noah / TARGET) * 100);
-  const m = Math.min(100, (max / TARGET) * 100);
-
-  todayNoah.style.width = n + "%";
-  todayMax.style.width = m + "%";
-  todayNoahPct.textContent = Math.round(n) + "%";
-  todayMaxPct.textContent = Math.round(m) + "%";
-}
