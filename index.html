@@ -14,8 +14,8 @@
   <meta name="apple-mobile-web-app-title" content="Protrack">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
 
-  <!-- ✅ WICHTIG: Cache-Busting -->
-  <link rel="stylesheet" href="style.css?v=13" />
+  <!-- 🔥 HARTES CACHE-BUSTING -->
+  <link rel="stylesheet" href="style.css?v=13-save" />
 
   <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
@@ -87,6 +87,8 @@
 
 <canvas id="confetti"></canvas>
 
-<script src="app.js"></script>
+<!-- 🔥 JS ebenfalls cache-busted -->
+<script src="app.js?v=13-save"></script>
+
 </body>
 </html>
