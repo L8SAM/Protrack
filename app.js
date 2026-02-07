@@ -72,19 +72,38 @@ onSnapshot(doc(db, "proteinTracker", today), snap => {
 // SPEICHERN (ONLINE / OFFLINE)
 saveBtn.onclick = async () => {
   if (!currentName) return;
-  const val = Number(input.value);
-  if (!val) return;
 
-  if (!navigator.onLine) {
-    await addOfflineEntry({ date: today, user: currentName, value: val });
-    offlineHint.style.display = "block";
-  } else {
-    await saveToFirebase(today, currentName, val);
+  const val = Number(input.value);
+  if (!val || val <= 0) return;
+
+  // 🔒 sofort sperren
+  saveBtn.disabled = true;
+  saveBtn.classList.add("saving");
+  saveBtn.textContent = "✓";
+
+  // 📭 Input sofort leeren (Doppelklick-Schutz)
+  input.value = "";
+
+  // 🔢 UI sofort aktualisieren
+  incrementLocalUI(currentName, val);
+
+  try {
+    if (navigator.onLine) {
+      await saveToFirebase(today, currentName, val);
+    } else {
+      await addOfflineEntry({ date: today, user: currentName, value: val });
+      offlineHint.style.display = "block";
+    }
+  } catch (e) {
+    console.error("Save failed", e);
   }
 
-  input.value = "";
-  saveHint.style.display = "block";
-  setTimeout(() => saveHint.style.display = "none", 1500);
+  // 🔓 Button zurücksetzen
+  setTimeout(() => {
+    saveBtn.disabled = false;
+    saveBtn.classList.remove("saving");
+    saveBtn.textContent = "Speichern";
+  }, 1000);
 };
 
 // SYNC OFFLINE → FIREBASE
@@ -103,3 +122,19 @@ window.addEventListener("online", async () => {
   }
   if (entries.length) await clearOfflineEntries();
 });
+function incrementLocalUI(user, val) {
+  const el = user === "Noah"
+    ? document.getElementById("todayNoahPct")
+    : document.getElementById("todayMaxPct");
+
+  const bar = user === "Noah"
+    ? document.getElementById("todayNoah")
+    : document.getElementById("todayMax");
+
+  const currentPct = parseInt(el.textContent) || 0;
+  const addPct = Math.round((val / TARGET) * 100);
+  const next = Math.min(100, currentPct + addPct);
+
+  el.textContent = next + "%";
+  bar.style.width = next + "%";
+}
