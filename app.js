@@ -1,104 +1,109 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-import {
-  getAuth,
-  signInWithEmailAndPassword,
-  onAuthStateChanged,
-  signOut
-} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
-import {
-  getFirestore,
-  doc,
-  setDoc,
-  onSnapshot
-} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+console.log("APP START");
 
 /* =========================
-   FIREBASE INIT
+   FIREBASE (CDN ONLY)
    ========================= */
 
-const firebaseConfig = {
-  // 🔴 DEINE DATEN HIER (unverändert lassen falls schon korrekt)
+importScripts = () => {}; // iOS safety no-op
+
+const script = src => {
+  const s = document.createElement("script");
+  s.src = src;
+  s.defer = true;
+  document.head.appendChild(s);
 };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+script("https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js");
+script("https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js");
+script("https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js");
 
-/* =========================
-   DATE (LOKAL, UTC-SAFE)
-   ========================= */
+window.addEventListener("load", () => {
 
-function localDateId(date = new Date()) {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, "0");
-  const d = String(date.getDate()).padStart(2, "0");
-  return `${y}-${m}-${d}`;
-}
+  firebase.initializeApp({
+    // 🔴 DEINE firebaseConfig HIER (wie bisher)
+  });
 
-const todayId = localDateId();
-const TARGET = 170;
+  const auth = firebase.auth();
+  const db = firebase.firestore();
 
-/* =========================
-   LOGIN UI
-   ========================= */
+  /* =========================
+     DATE (LOKAL, UTC-SAFE)
+     ========================= */
 
-const loginBtn = document.getElementById("loginBtn");
-const logoutBtn = document.getElementById("logoutBtn");
-const overlay = document.getElementById("loginOverlay");
-const confirmLogin = document.getElementById("confirmLogin");
-const userName = document.getElementById("userName");
-
-loginBtn.onclick = () => overlay.style.display = "flex";
-overlay.onclick = e => { if (e.target === overlay) overlay.style.display = "none"; };
-
-confirmLogin.onclick = async () => {
-  const email = document.getElementById("email").value;
-  const pw = document.getElementById("password").value;
-  try {
-    await signInWithEmailAndPassword(auth, email, pw);
-    overlay.style.display = "none";
-  } catch (e) {
-    alert("Login fehlgeschlagen");
+  function localDateId(d = new Date()) {
+    return d.getFullYear() + "-" +
+      String(d.getMonth()+1).padStart(2,"0") + "-" +
+      String(d.getDate()).padStart(2,"0");
   }
-};
 
-logoutBtn.onclick = () => signOut(auth);
+  const todayId = localDateId();
+  const TARGET = 170;
 
-onAuthStateChanged(auth, user => {
-  if (user) {
-    userName.textContent = user.email;
-    loginBtn.style.display = "none";
-    logoutBtn.style.display = "inline";
-    document.getElementById("saveBar").classList.remove("hidden");
-  } else {
-    userName.textContent = "";
-    loginBtn.style.display = "inline";
-    logoutBtn.style.display = "none";
-    document.getElementById("saveBar").classList.add("hidden");
-  }
+  /* =========================
+     LOGIN
+     ========================= */
+
+  const loginBtn = loginBtnEl();
+  const logoutBtn = el("logoutBtn");
+  const overlay = el("loginOverlay");
+  const userName = el("userName");
+
+  loginBtn.onclick = () => overlay.style.display = "flex";
+  overlay.onclick = e => { if (e.target === overlay) overlay.style.display = "none"; };
+
+  el("confirmLogin").onclick = async () => {
+    try {
+      await auth.signInWithEmailAndPassword(
+        el("email").value,
+        el("password").value
+      );
+      overlay.style.display = "none";
+    } catch {
+      alert("Login fehlgeschlagen");
+    }
+  };
+
+  logoutBtn.onclick = () => auth.signOut();
+
+  auth.onAuthStateChanged(user => {
+    if (user) {
+      userName.textContent = user.email;
+      loginBtn.style.display = "none";
+      logoutBtn.style.display = "inline";
+      el("saveBar").classList.remove("hidden");
+    } else {
+      userName.textContent = "";
+      loginBtn.style.display = "inline";
+      logoutBtn.style.display = "none";
+      el("saveBar").classList.add("hidden");
+    }
+  });
+
+  /* =========================
+     TODAY SNAPSHOT
+     ========================= */
+
+  db.collection("proteinTracker").doc(todayId)
+    .onSnapshot(snap => {
+      const d = snap.exists ? snap.data() : {};
+      el("todayNoah").style.width = Math.min(100, ((d.Noah||0)/TARGET)*100) + "%";
+      el("todayMax").style.width = Math.min(100, ((d.Max||0)/TARGET)*100) + "%";
+    });
+
+  /* =========================
+     SAVE
+     ========================= */
+
+  el("saveBtn").onclick = async () => {
+    const v = Number(el("proteinInput").value);
+    if (!v) return;
+    await db.collection("proteinTracker")
+      .doc(todayId)
+      .set({ Noah: v }, { merge: true });
+    el("proteinInput").value = "";
+  };
+
+  function el(id){ return document.getElementById(id); }
+  function loginBtnEl(){ return document.getElementById("loginBtn"); }
+
 });
-
-/* =========================
-   TODAY SNAPSHOT
-   ========================= */
-
-onSnapshot(doc(db, "proteinTracker", todayId), snap => {
-  const d = snap.exists() ? snap.data() : {};
-  document.getElementById("todayNoah").style.width =
-    Math.min(100, ((d.Noah || 0) / TARGET) * 100) + "%";
-  document.getElementById("todayMax").style.width =
-    Math.min(100, ((d.Max || 0) / TARGET) * 100) + "%";
-});
-
-/* =========================
-   SAVE
-   ========================= */
-
-document.getElementById("saveBtn").onclick = async () => {
-  const val = Number(document.getElementById("proteinInput").value);
-  if (!val) return;
-
-  const ref = doc(db, "proteinTracker", todayId);
-  await setDoc(ref, { Noah: val }, { merge: true });
-  document.getElementById("proteinInput").value = "";
-};
