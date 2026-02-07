@@ -12,6 +12,7 @@
 
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Protrack">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
 
   <link rel="stylesheet" href="style.css" />
 
@@ -61,6 +62,8 @@
     <span id="todayMaxText"></span>
     <div class="bar"><div id="todayMax" class="fill"></div></div>
   </div>
+
+  <div class="last-entry" id="lastEntryText"></div>
 </section>
 
 <!-- WEEK -->
@@ -81,7 +84,6 @@
   <button id="undoBtn">↩︎</button>
 </div>
 
-<!-- CONFETTI -->
 <canvas id="confetti"></canvas>
 
 <script src="app.js"></script>
