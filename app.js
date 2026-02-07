@@ -1,18 +1,20 @@
 alert("1️⃣ JS gestartet");
 
-if (typeof firebase === "undefined") {
-  alert("❌ Firebase undefined");
-} else {
-  alert("✅ Firebase vorhanden");
-}
+firebase.initializeApp({
+  apiKey: "TEST",
+  projectId: "TEST"
+});
 
-/* TEST: NUR INIT */
+alert("2️⃣ Firebase init OK");
+
+/* === AUTH TEST === */
 try {
-  firebase.initializeApp({
-    apiKey: "TEST",
-    projectId: "TEST"
+  const auth = firebase.auth();
+  alert("3️⃣ firebase.auth() OK");
+
+  auth.onAuthStateChanged(() => {
+    alert("4️⃣ onAuthStateChanged ausgelöst");
   });
-  alert("✅ firebase.initializeApp OK");
 } catch (e) {
-  alert("❌ INIT FEHLER: " + e.message);
+  alert("❌ AUTH FEHLER: " + e.message);
 }
