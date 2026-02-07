@@ -1,35 +1,60 @@
-/* RESET */
-*, *::before, *::after { box-sizing: border-box; }
-html { -webkit-text-size-adjust: 100%; }
+/* =========================
+   HEADER + LOGO (FINAL)
+   ========================= */
 
-body {
-  margin: 0;
-  padding: 16px;
-  padding-bottom: 180px;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont;
-  background: #f2f4f8;
-  color: #111;
-  max-width: 520px;
-  margin-inline: auto;
-}
-
-/* HEADER */
 .app-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
+
+  position: sticky;
+  top: 0;
+  z-index: 20;
+
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: 12px;
   margin-bottom: 16px;
+
+  background: #f2f4f8;
 }
 
-#logo {
-  font-size: 20px;
-  font-weight: 700;
+.logo-wrap {
+  display: flex;
+  align-items: center;
+}
+
+/* Beide Logos */
+.logo {
+  display: none;
+  height: 32px;
+}
+
+/* Desktop / breit */
+.logo-horizontal {
+  display: block;
+}
+
+/* iPhone / schmal */
+@media (max-width: 480px) {
+  .logo-horizontal {
+    display: none;
+  }
+  .logo-small {
+    display: block;
+    height: 28px;
+  }
+}
+
+/* Header rechts */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .user-name {
   font-size: 13px;
   color: #6b7280;
-  margin-right: 8px;
 }
 
 .app-header button {
@@ -37,79 +62,4 @@ body {
   border: none;
   font-size: 14px;
   color: #6b7280;
-}
-
-/* CARDS */
-.card {
-  background: #fff;
-  border-radius: 16px;
-  padding: 16px;
-  margin-bottom: 16px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.05);
-}
-
-.card.muted { opacity: 0.6; }
-
-/* BARS */
-.today-block { margin-bottom: 14px; }
-.bar {
-  margin-top: 6px;
-  height: 8px;
-  background: #e5e7eb;
-  border-radius: 999px;
-  overflow: hidden;
-}
-
-.fill { height: 100%; width: 0%; transition: width .3s; }
-.blue { background: #3b82f6; }
-.green { background: #22c55e; }
-
-/* WEEK */
-#weekChart, #lastWeekChart {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 8px;
-}
-
-.week-day { font-size: 11px; text-align: center; }
-.week-bar {
-  height: 6px;
-  background: #e5e7eb;
-  border-radius: 999px;
-  overflow: hidden;
-}
-
-/* SAVEBAR */
-.savebar {
-  position: fixed;
-  left: 12px;
-  right: 12px;
-  bottom: 12px;
-  display: flex;
-  gap: 10px;
-  padding: 14px;
-  padding-bottom: calc(14px + env(safe-area-inset-bottom));
-  background: #fff;
-  border-radius: 22px;
-  box-shadow: 0 12px 30px rgba(0,0,0,0.18);
-}
-
-.savebar.hidden { display: none; }
-
-/* LOGIN */
-.overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.45);
-  display: none;
-  align-items: center;
-  justify-content: center;
-}
-
-.login-card {
-  background: #fff;
-  padding: 20px;
-  border-radius: 18px;
-  width: 90%;
-  max-width: 320px;
 }
