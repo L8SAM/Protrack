@@ -131,7 +131,12 @@ saveBtn.onclick = async () => {
   const val = Number(input.value);
   if (!val || val <= 0) return;
 
-  // UX-Schutz
+  // 📳 HAPTIC FEEDBACK (iOS + Android)
+  if (navigator.vibrate) {
+    navigator.vibrate(15); // kurzer, cleaner Tap
+  }
+
+  // UX Schutz
   saveBtn.disabled = true;
   input.value = "";
 
@@ -145,7 +150,9 @@ saveBtn.onclick = async () => {
   } catch (e) {
     console.error(e);
   } finally {
-    setTimeout(() => (saveBtn.disabled = false), 700);
+    setTimeout(() => {
+      saveBtn.disabled = false;
+    }, 700);
   }
 };
 
