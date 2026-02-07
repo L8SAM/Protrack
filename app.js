@@ -1,6 +1,13 @@
 alert("1️⃣ JS gestartet");
 
 firebase.initializeApp({
+  firebase.firestore().enablePersistence({ synchronizeTabs: false })
+  .then(() => {
+    alert("✅ Firestore Persistence aktiv");
+  })
+  .catch(err => {
+    alert("⚠️ Persistence Fehler: " + err.code);
+  });
   apiKey: "TEST",
   projectId: "TEST"
 });
