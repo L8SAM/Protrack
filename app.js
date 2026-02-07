@@ -35,12 +35,24 @@ function haptic(type){
 }
 
 /* LOGIN */
-el("loginBtn").onclick=()=>el("loginOverlay").style.display="flex";
-el("loginOverlay").onclick=e=>{ if(e.target.id==="loginOverlay") el("loginOverlay").style.display="none"; };
+el("loginBtn").onclick=()=>{
+  document.body.classList.add("modal-open");
+  el("loginOverlay").style.display="flex";
+};
+
+el("loginOverlay").onclick=e=>{
+  if(e.target.id==="loginOverlay"){
+    document.body.classList.remove("modal-open");
+    el("loginOverlay").style.display="none";
+  }
+};
+
 el("confirmLogin").onclick=async()=>{
   await auth.signInWithEmailAndPassword(el("email").value,el("password").value);
+  document.body.classList.remove("modal-open");
   el("loginOverlay").style.display="none";
 };
+
 el("logoutBtn").onclick=()=>auth.signOut();
 
 auth.onAuthStateChanged(user=>{
@@ -55,6 +67,8 @@ auth.onAuthStateChanged(user=>{
     loadToday(); loadWeek(0); loadWeek(-7);
   } else {
     el("userName").textContent="";
+    el("loginBtn").style.display="inline";
+    el("logoutBtn").style.display="none";
     el("saveBar").classList.add("hidden");
   }
 });
@@ -142,7 +156,8 @@ el("undoBtn").onclick=async()=>{
 /* CONFETTI */
 function launchConfetti(){
   const c=el("confetti"),ctx=c.getContext("2d");
-  c.width=innerWidth;c.height=innerHeight;
+  c.width=innerWidth;
+  c.height=innerHeight;
   const pieces=[...Array(120)].map(()=>({
     x:Math.random()*c.width,
     y:Math.random()*-c.height,
