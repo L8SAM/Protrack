@@ -24,7 +24,10 @@ const USERS = ["Noah","Max"];
 let currentUID = null;
 let currentUser = null;
 
-/* 🔁 UNDO STATE */
+/* 🟢 ACTIVE DAY (v1.3) */
+let activeDate = dateId(new Date());
+
+/* 🔁 UNDO */
 let undoEntry = null;
 let undoTimer = null;
 
@@ -38,8 +41,16 @@ function startOfWeek(d){
   const n=new Date(d); const day=n.getDay()||7;
   n.setDate(n.getDate()-day+1); n.setHours(0,0,0,0); return n;
 }
-function addDays(d,i){ const n=new Date(d); n.setDate(n.getDate()+i); return n; }
-function color(p){ if(p<40)return"red"; if(p<75)return"yellow"; return"green"; }
+function addDays(d,i){
+  const n=new Date(d);
+  n.setDate(n.getDate()+i);
+  return n;
+}
+function color(p){
+  if(p<40)return"red";
+  if(p<75)return"yellow";
+  return"green";
+}
 function haptic(type){
   if(window.navigator.vibrate){
     navigator.vibrate(type==="success"?30:type==="soft"?10:5);
@@ -76,6 +87,8 @@ auth.onAuthStateChanged(user=>{
     currentUID = user.uid;
     currentUser = USER_MAP[currentUID] || "Unknown";
 
+    activeDate = dateId(new Date()); // reset auf heute
+
     el("userName").textContent = currentUser;
     el("labelNoah").classList.toggle("active", currentUser==="Noah");
     el("labelMax").classList.toggle("active", currentUser==="Max");
@@ -98,20 +111,18 @@ auth.onAuthStateChanged(user=>{
   }
 });
 
-/* TODAY */
+/* TODAY CARD (zeigt IMMER echten heutigen Stand) */
 function loadToday(){
-  const id = dateId(new Date());
+  const todayId = dateId(new Date());
 
-  db.collection("proteinTracker").doc(id).onSnapshot(s=>{
+  db.collection("proteinTracker").doc(todayId).onSnapshot(s=>{
     const d = s.exists ? s.data() : {};
-
     USERS.forEach(u=>{
       const v = d[u] || 0;
       const p = Math.round(v / TARGET * 100);
-
       const bar = el(`today${u}`);
-      bar.style.width = Math.min(100, p) + "%";
-      bar.className = "fill " + color(p);
+      bar.style.width = Math.min(100,p)+"%";
+      bar.className = "fill "+color(p);
       el(`today${u}Text`).textContent = `${v} g / ${TARGET} g (${p}%)`;
     });
   });
@@ -119,73 +130,82 @@ function loadToday(){
 
 /* WEEK */
 function loadWeek(offset){
-  const base=startOfWeek(new Date());
+  const base = startOfWeek(new Date());
   base.setDate(base.getDate()+offset);
-  const target=offset===0?el("weekChart"):el("lastWeekChart");
-  target.innerHTML="";
+  const target = offset===0 ? el("weekChart") : el("lastWeekChart");
+  target.innerHTML = "";
 
   for(let i=0;i<7;i++){
-    const d=addDays(base,i);
-    const id=dateId(d);
-    const elDay=document.createElement("div");
-    elDay.className="week-day";
-    if(dateId(new Date())===id) elDay.classList.add("today");
+    const d = addDays(base,i);
+    const id = dateId(d);
+    const isThisWeek = offset === 0;
+    const isFuture = d > new Date();
+    const clickable = isThisWeek && !isFuture;
 
-    elDay.innerHTML=`
+    const elDay = document.createElement("div");
+    elDay.className = "week-day";
+    if(id === activeDate && isThisWeek) elDay.classList.add("today");
+
+    elDay.innerHTML = `
       ${["Mo","Di","Mi","Do","Fr","Sa","So"][i]}<br>${d.getDate()}.${d.getMonth()+1}
       <div class="week-bar"><div class="week-fill noah" id="w-${id}-Noah"></div></div>
       <div class="week-bar"><div class="week-fill max" id="w-${id}-Max"></div></div>
     `;
+
+    if(clickable){
+      elDay.classList.add("clickable");
+      elDay.onclick = ()=>{
+        activeDate = id;
+        hideUndo();
+        loadWeek(0); // nur diese Woche neu zeichnen
+      };
+    }
+
     target.appendChild(elDay);
 
     setTimeout(()=>{
       db.collection("proteinTracker").doc(id).onSnapshot(s=>{
-        const data=s.exists?s.data():{};
+        const data = s.exists ? s.data() : {};
         USERS.forEach(u=>{
-          const v=data[u]||0;
-          const p=Math.min(100,v/TARGET*100);
-          const b=el(`w-${id}-${u}`);
-          if(b) b.style.width=p+"%";
+          const v = data[u] || 0;
+          const p = Math.min(100, v / TARGET * 100);
+          const b = el(`w-${id}-${u}`);
+          if(b) b.style.width = p+"%";
         });
       });
     }, i*60);
   }
 }
 
-/* SAVE */
+/* SAVE (wirkt auf activeDate!) */
 el("saveBtn").onclick=async()=>{
   const input = el("proteinInput");
   const value = Number(input.value);
-  if(!value || value < 0 || value > 300 || !currentUser) return;
+  if(!value || value<0 || value>300 || !currentUser) return;
 
-  const date = dateId(new Date());
-
-  await db.collection("proteinTracker").doc(date)
+  await db.collection("proteinTracker").doc(activeDate)
     .set(
-      {[currentUser]:firebase.firestore.FieldValue.increment(value)},
+      {[currentUser]: firebase.firestore.FieldValue.increment(value)},
       {merge:true}
     );
 
   input.value="";
   haptic("soft");
 
-  /* 🔁 SET UNDO */
   setUndo({
     user: currentUser,
-    date,
+    date: activeDate,
     value
   });
 };
 
-/* 🔁 UNDO LOGIC */
+/* 🔁 UNDO */
 function setUndo(entry){
   undoEntry = entry;
   clearTimeout(undoTimer);
-
   const btn = el("undoBtn");
   btn.textContent = "Rückgängig";
   btn.style.display = "inline";
-
   undoTimer = setTimeout(hideUndo, 10000);
 }
 
@@ -200,7 +220,7 @@ el("undoBtn").onclick = async()=>{
 
   await db.collection("proteinTracker").doc(undoEntry.date)
     .set(
-      {[undoEntry.user]:firebase.firestore.FieldValue.increment(-undoEntry.value)},
+      {[undoEntry.user]: firebase.firestore.FieldValue.increment(-undoEntry.value)},
       {merge:true}
     );
 
