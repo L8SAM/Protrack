@@ -64,18 +64,20 @@
 </section>
 
 <section class="card">
-  <h2>Diese Woche</h2>
-  <div id="weekChart"></div>
-  <p class="hint">
-    Ø Woche – Noah: <span id="avgNoah">0%</span> ·
-    Max: <span id="avgMax">0%</span>
-  </p>
-</section>
-
-<section class="card">
   <h2>Heute eintragen</h2>
-  <input id="proteinInput" type="number" placeholder="Protein heute (g)">
-  <button id="saveBtn" disabled>Speichern</button>
+
+  <div class="input-row">
+    <input
+      id="proteinInput"
+      type="number"
+      min="1"
+      step="1"
+      placeholder="g"
+      inputmode="numeric"
+    />
+    <button id="saveBtn" disabled>Speichern</button>
+  </div>
+
   <p id="saveHint" class="hint" style="display:none;">✔️ Gespeichert</p>
 </section>
 
