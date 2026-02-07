@@ -5,12 +5,16 @@
   <title>Protrack</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- iOS PWA Pflicht -->
+  <!-- iOS PWA -->
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Protrack">
 
   <link rel="stylesheet" href="style.css" />
+
+  <!-- 🔥 FIREBASE – SYNCHRON & STABIL -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
 </head>
 
 <body>
@@ -24,7 +28,6 @@
   </div>
 </header>
 
-<!-- LOGIN -->
 <div id="loginOverlay" class="overlay">
   <div class="login-card">
     <h2>Login</h2>
@@ -36,26 +39,14 @@
 
 <section class="card">
   <h2>Heute</h2>
-
   <div class="today-block">
     <span>Noah</span>
     <div class="bar"><div id="todayNoah" class="fill blue"></div></div>
   </div>
-
   <div class="today-block">
     <span>Max</span>
     <div class="bar"><div id="todayMax" class="fill green"></div></div>
   </div>
-</section>
-
-<section class="card">
-  <h2>Diese Woche</h2>
-  <div id="weekChart"></div>
-</section>
-
-<section class="card muted">
-  <h2>Letzte Woche</h2>
-  <div id="lastWeekChart"></div>
 </section>
 
 <div id="saveBar" class="savebar hidden">
@@ -63,7 +54,7 @@
   <button id="saveBtn">Speichern</button>
 </div>
 
-<!-- NUR EINE DATEI -->
+<!-- APP -->
 <script src="app.js"></script>
 </body>
 </html>
