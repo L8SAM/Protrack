@@ -15,7 +15,6 @@ const TARGET = 170;
 const USERS = ["Noah","Max"];
 let currentUser = "Noah";
 let lastEntry = null;
-let confettiShown = false;
 
 const el = id => document.getElementById(id);
 
@@ -29,6 +28,11 @@ function startOfWeek(d){
 }
 function addDays(d,i){ const n=new Date(d); n.setDate(n.getDate()+i); return n; }
 function color(p){ if(p<40)return"red"; if(p<75)return"yellow"; return"green"; }
+function haptic(type){
+  if(window.navigator.vibrate){
+    navigator.vibrate(type==="success"?30:type==="soft"?10:5);
+  }
+}
 
 /* LOGIN */
 el("loginBtn").onclick=()=>el("loginOverlay").style.display="flex";
@@ -56,6 +60,7 @@ auth.onAuthStateChanged(user=>{
 });
 
 /* TODAY */
+let confettiDone=false;
 function loadToday(){
   const id=dateId(new Date());
   db.collection("proteinTracker").doc(id).onSnapshot(s=>{
@@ -68,8 +73,9 @@ function loadToday(){
       bar.className="fill "+color(p);
       el(`today${u}Text`).textContent=`${v} g / ${TARGET} g (${p}%)`;
 
-      if(u===currentUser && v>=TARGET && !confettiShown){
-        confettiShown=true;
+      if(u===currentUser && v>=TARGET && !confettiDone){
+        confettiDone=true;
+        haptic("success");
         launchConfetti();
       }
     });
@@ -94,28 +100,34 @@ function loadWeek(offset){
       <div class="week-bar"><div class="week-fill max" id="w-${id}-Max"></div></div>
     `;
     target.appendChild(elDay);
-    db.collection("proteinTracker").doc(id).onSnapshot(s=>{
-      const data=s.exists?s.data():{};
-      USERS.forEach(u=>{
-        const v=data[u]||0;
-        const p=Math.min(100,v/TARGET*100);
-        const b=el(`w-${id}-${u}`);
-        if(b) b.style.width=p+"%";
+    setTimeout(()=>{
+      db.collection("proteinTracker").doc(id).onSnapshot(s=>{
+        const data=s.exists?s.data():{};
+        USERS.forEach(u=>{
+          const v=data[u]||0;
+          const p=Math.min(100,v/TARGET*100);
+          const b=el(`w-${id}-${u}`);
+          if(b) b.style.width=p+"%";
+        });
       });
-    });
+    }, i*60);
   }
 }
 
 /* SAVE + UNDO */
 el("saveBtn").onclick=async()=>{
-  const v=Number(el("proteinInput").value);
-  if(!v || v<0 || v>300) return;
+  const input=el("proteinInput");
+  const v=Number(input.value);
+  if(!v||v<0||v>300)return;
   const d=dateId(new Date());
   lastEntry={user:currentUser,value:v,date:d};
   await db.collection("proteinTracker").doc(d)
     .set({[currentUser]:firebase.firestore.FieldValue.increment(v)},{merge:true});
-  el("proteinInput").value="";
+  input.value="";
+  input.classList.add("flash");
+  setTimeout(()=>input.classList.remove("flash"),400);
   el("undoBtn").style.opacity=1;
+  haptic("soft");
   setTimeout(()=>el("undoBtn").style.opacity=.3,7000);
 };
 
@@ -124,6 +136,7 @@ el("undoBtn").onclick=async()=>{
   await db.collection("proteinTracker").doc(lastEntry.date)
     .set({[lastEntry.user]:firebase.firestore.FieldValue.increment(-lastEntry.value)},{merge:true});
   lastEntry=null;
+  haptic("light");
 };
 
 /* CONFETTI */
