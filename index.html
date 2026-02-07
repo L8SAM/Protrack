@@ -7,12 +7,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#3b82f6" />
 
-  <!-- PWA / ICONS -->
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="icon-192.png">
   <link rel="apple-touch-icon" href="icon-192.png">
 
-  <!-- iOS PWA -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Protrack">
 
@@ -24,10 +22,9 @@
 <header class="app-header">
   <div class="header-left">
     <picture>
-      <source media="(max-width: 420px)" srcset="logo-protrack-small.png">
-      <img src="logo-protrack-horizontal.png" alt="Protrack" class="app-logo" />
+      <source media="(max-width:420px)" srcset="logo-protrack-small.png">
+      <img src="logo-protrack-horizontal.png" class="app-logo" />
     </picture>
-
     <span id="userName" class="user-name"></span>
   </div>
 
@@ -41,17 +38,15 @@
   ⚠️ Offline – Einträge werden später synchronisiert
 </p>
 
-<!-- LOGIN OVERLAY -->
 <div id="loginOverlay" class="overlay">
   <div class="login-card">
     <h2>Login</h2>
-    <input type="email" id="email" placeholder="E-Mail" />
-    <input type="password" id="password" placeholder="Passwort" />
+    <input id="email" type="email" placeholder="E-Mail">
+    <input id="password" type="password" placeholder="Passwort">
     <button id="confirmLogin">Einloggen</button>
   </div>
 </div>
 
-<!-- HEUTE -->
 <section class="card">
   <h2>Heute</h2>
 
@@ -68,33 +63,31 @@
   </div>
 </section>
 
-<!-- WOCHE -->
 <section class="card">
   <h2>Diese Woche</h2>
   <div id="weekChart"></div>
-
   <p class="hint">
     Ø Woche – Noah: <span id="avgNoah">0%</span> ·
     Max: <span id="avgMax">0%</span>
   </p>
 </section>
 
-<!-- INPUT -->
 <section class="card">
   <h2>Heute eintragen</h2>
-  <input
-    type="number"
-    id="proteinInput"
-    placeholder="Protein heute (g)"
-    inputmode="numeric"
-  />
+  <input id="proteinInput" type="number" placeholder="Protein heute (g)">
   <button id="saveBtn" disabled>Speichern</button>
   <p id="saveHint" class="hint" style="display:none;">✔️ Gespeichert</p>
 </section>
 
-<footer class="hint" style="text-align:center; margin-bottom:12px;">
+<footer class="hint" style="text-align:center">
   Zielwert: 2 g Protein pro kg Körpergewicht ≈ <strong>170 g</strong>
 </footer>
+
+<script>
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("sw.js");
+  }
+</script>
 
 <script type="module" src="app.js"></script>
 </body>
