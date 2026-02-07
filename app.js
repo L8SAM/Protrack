@@ -17,7 +17,7 @@ import {
 const TARGET = 170;
 
 // ELEMENTE
-const loginBtn = loginBtn = document.getElementById("loginBtn");
+const loginBtn = document.getElementById("loginBtn");
 const logoutBtn = document.getElementById("logoutBtn");
 const overlay = document.getElementById("loginOverlay");
 const confirmLogin = document.getElementById("confirmLogin");
@@ -28,6 +28,11 @@ const input = document.getElementById("proteinInput");
 const userName = document.getElementById("userName");
 const saveHint = document.getElementById("saveHint");
 const offlineHint = document.getElementById("offlineHint");
+
+const todayNoah = document.getElementById("todayNoah");
+const todayMax = document.getElementById("todayMax");
+const todayNoahPct = document.getElementById("todayNoahPct");
+const todayMaxPct = document.getElementById("todayMaxPct");
 
 let currentName = null;
 
@@ -55,37 +60,28 @@ onAuthStateChanged(auth, user => {
   }
 });
 
-// HEUTE
+// HEUTE – nur Anzeige
 const today = new Date().toISOString().split("T")[0];
-
 onSnapshot(doc(db, "proteinTracker", today), snap => {
   const data = snap.data() || {};
-  const n = Math.min(100, ((data.Noah ?? 0) / TARGET) * 100);
-  const m = Math.min(100, ((data.Max ?? 0) / TARGET) * 100);
-
-  document.getElementById("todayNoah").style.width = n + "%";
-  document.getElementById("todayMax").style.width = m + "%";
-  document.getElementById("todayNoahPct").textContent = Math.round(n) + "%";
-  document.getElementById("todayMaxPct").textContent = Math.round(m) + "%";
+  updateBars(data.Noah ?? 0, data.Max ?? 0);
 });
 
-// SPEICHERN (ONLINE / OFFLINE)
+// SPEICHERN
 saveBtn.onclick = async () => {
   if (!currentName) return;
 
   const val = Number(input.value);
   if (!val || val <= 0) return;
 
-  // 🔒 sofort sperren
+  // 🔒 UX-Schutz
   saveBtn.disabled = true;
   saveBtn.classList.add("saving");
   saveBtn.textContent = "✓";
-
-  // 📭 Input sofort leeren (Doppelklick-Schutz)
   input.value = "";
 
-  // 🔢 UI sofort aktualisieren
-  incrementLocalUI(currentName, val);
+  // 🧠 sofort UI
+  incrementLocal(currentName, val);
 
   try {
     if (navigator.onLine) {
@@ -95,10 +91,9 @@ saveBtn.onclick = async () => {
       offlineHint.style.display = "block";
     }
   } catch (e) {
-    console.error("Save failed", e);
+    console.error(e);
   }
 
-  // 🔓 Button zurücksetzen
   setTimeout(() => {
     saveBtn.disabled = false;
     saveBtn.classList.remove("saving");
@@ -106,7 +101,7 @@ saveBtn.onclick = async () => {
   }, 1000);
 };
 
-// SYNC OFFLINE → FIREBASE
+// FIREBASE SAVE
 async function saveToFirebase(date, user, val) {
   const ref = doc(db, "proteinTracker", date);
   const snap = await getDoc(ref);
@@ -114,6 +109,7 @@ async function saveToFirebase(date, user, val) {
   await setDoc(ref, { [user]: prev + val }, { merge: true });
 }
 
+// OFFLINE SYNC
 window.addEventListener("online", async () => {
   offlineHint.style.display = "none";
   const entries = await getOfflineEntries();
@@ -122,19 +118,26 @@ window.addEventListener("online", async () => {
   }
   if (entries.length) await clearOfflineEntries();
 });
-function incrementLocalUI(user, val) {
-  const el = user === "Noah"
-    ? document.getElementById("todayNoahPct")
-    : document.getElementById("todayMaxPct");
 
-  const bar = user === "Noah"
-    ? document.getElementById("todayNoah")
-    : document.getElementById("todayMax");
+// UI HELFER
+function updateBars(noah, max) {
+  const n = Math.min(100, (noah / TARGET) * 100);
+  const m = Math.min(100, (max / TARGET) * 100);
 
-  const currentPct = parseInt(el.textContent) || 0;
-  const addPct = Math.round((val / TARGET) * 100);
-  const next = Math.min(100, currentPct + addPct);
+  todayNoah.style.width = n + "%";
+  todayMax.style.width = m + "%";
+  todayNoahPct.textContent = Math.round(n) + "%";
+  todayMaxPct.textContent = Math.round(m) + "%";
+}
 
-  el.textContent = next + "%";
-  bar.style.width = next + "%";
+function incrementLocal(user, val) {
+  const pct = Math.round((val / TARGET) * 100);
+
+  if (user === "Noah") {
+    todayNoahPct.textContent = Math.min(100, parseInt(todayNoahPct.textContent) + pct) + "%";
+    todayNoah.style.width = todayNoahPct.textContent;
+  } else {
+    todayMaxPct.textContent = Math.min(100, parseInt(todayMaxPct.textContent) + pct) + "%";
+    todayMax.style.width = todayMaxPct.textContent;
+  }
 }
