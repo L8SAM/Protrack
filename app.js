@@ -12,8 +12,17 @@ const db = firebase.firestore();
 db.enablePersistence({ synchronizeTabs:false }).catch(()=>{});
 
 const TARGET = 170;
+
+/* 🔐 UID → Name (EINZIGE WAHRHEIT) */
+const USER_MAP = {
+  "PcLivG8sbxfUbfWg5asXy4EPLrm2": "Max",
+  "YUq3GKGF1aWih8Yp3bIIf740NVD2": "Noah"
+};
+
 const USERS = ["Noah","Max"];
-let currentUser = "Noah";
+
+let currentUID = null;
+let currentUser = null;
 let lastEntry = null;
 
 const el = id => document.getElementById(id);
@@ -34,7 +43,7 @@ function haptic(type){
   }
 }
 
-/* LOGIN */
+/* LOGIN UI */
 el("loginBtn").onclick=()=>{
   document.body.classList.add("modal-open");
   el("loginOverlay").style.display="flex";
@@ -48,24 +57,36 @@ el("loginOverlay").onclick=e=>{
 };
 
 el("confirmLogin").onclick=async()=>{
-  await auth.signInWithEmailAndPassword(el("email").value,el("password").value);
+  await auth.signInWithEmailAndPassword(
+    el("email").value,
+    el("password").value
+  );
   document.body.classList.remove("modal-open");
   el("loginOverlay").style.display="none";
 };
 
 el("logoutBtn").onclick=()=>auth.signOut();
 
+/* AUTH STATE */
 auth.onAuthStateChanged(user=>{
   if(user){
-    currentUser = user.email.includes("max") ? "Max" : "Noah";
-    el("userName").textContent=currentUser;
+    currentUID = user.uid;
+    currentUser = USER_MAP[currentUID] || "Unknown";
+
+    el("userName").textContent = currentUser;
     el("labelNoah").classList.toggle("active", currentUser==="Noah");
     el("labelMax").classList.toggle("active", currentUser==="Max");
+
     el("loginBtn").style.display="none";
     el("logoutBtn").style.display="inline";
     el("saveBar").classList.remove("hidden");
-    loadToday(); loadWeek(0); loadWeek(-7);
+
+    loadToday();
+    loadWeek(0);
+    loadWeek(-7);
   } else {
+    currentUID = null;
+    currentUser = null;
     el("userName").textContent="";
     el("loginBtn").style.display="inline";
     el("logoutBtn").style.display="none";
@@ -128,15 +149,21 @@ function loadWeek(offset){
   }
 }
 
-/* SAVE + UNDO */
+/* SAVE + UNDO (UID-sicher) */
 el("saveBtn").onclick=async()=>{
   const input=el("proteinInput");
   const v=Number(input.value);
-  if(!v||v<0||v>300)return;
+  if(!v||v<0||v>300||!currentUser)return;
+
   const d=dateId(new Date());
   lastEntry={user:currentUser,value:v,date:d};
+
   await db.collection("proteinTracker").doc(d)
-    .set({[currentUser]:firebase.firestore.FieldValue.increment(v)},{merge:true});
+    .set(
+      {[currentUser]:firebase.firestore.FieldValue.increment(v)},
+      {merge:true}
+    );
+
   input.value="";
   input.classList.add("flash");
   setTimeout(()=>input.classList.remove("flash"),400);
@@ -148,7 +175,10 @@ el("saveBtn").onclick=async()=>{
 el("undoBtn").onclick=async()=>{
   if(!lastEntry)return;
   await db.collection("proteinTracker").doc(lastEntry.date)
-    .set({[lastEntry.user]:firebase.firestore.FieldValue.increment(-lastEntry.value)},{merge:true});
+    .set(
+      {[lastEntry.user]:firebase.firestore.FieldValue.increment(-lastEntry.value)},
+      {merge:true}
+    );
   lastEntry=null;
   haptic("light");
 };
