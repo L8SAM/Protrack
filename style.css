@@ -1,19 +1,10 @@
-/* =========================
-   RESET & GLOBAL
-   ========================= */
-
-*, *::before, *::after {
-  box-sizing: border-box;
-}
-
-html {
-  -webkit-text-size-adjust: 100%;
-}
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
 
 body {
   margin: 0;
   padding: 16px;
-  padding-bottom: 180px; /* Platz für Sticky Savebar */
+  padding-bottom: 180px;
   font-family: system-ui, -apple-system, BlinkMacSystemFont;
   background: #f2f4f8;
   color: #111;
@@ -21,10 +12,7 @@ body {
   margin-inline: auto;
 }
 
-/* =========================
-   HEADER (wie vorher)
-   ========================= */
-
+/* HEADER */
 .app-header {
   display: flex;
   justify-content: space-between;
@@ -32,259 +20,101 @@ body {
   margin-bottom: 16px;
 }
 
-.user-name {
-  font-size: 14px;
-  color: #6b7280;
+.logo { display: none; height: 22px; }
+.logo-horizontal { display: block; }
+@media (max-width:480px){
+  .logo-horizontal{display:none}
+  .logo-small{display:block;height:20px}
 }
 
+.user-name { font-size:14px; color:#6b7280 }
 .app-header button {
-  background: none;
-  border: none;
-  font-size: 14px;
-  color: #6b7280;
+  background:none; border:none; font-size:14px; color:#6b7280;
 }
 
-/* =========================
-   LOGO PATCH (Bild statt Text)
-   ========================= */
-
-.logo-wrap {
-  display: flex;
-  align-items: center;
-}
-
-.logo {
-  display: none;
-  height: 22px; /* fühlt sich wie früheres Textlogo an */
-}
-
-/* Desktop */
-.logo-horizontal {
-  display: block;
-}
-
-/* Mobile */
-@media (max-width: 480px) {
-  .logo-horizontal {
-    display: none;
-  }
-
-  .logo-small {
-    display: block;
-    height: 20px;
-  }
-}
-
-/* =========================
-   CARDS
-   ========================= */
-
+/* CARDS */
 .card {
-  background: #ffffff;
-  border-radius: 16px;
-  padding: 16px;
-  margin-bottom: 16px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+  background:#fff;
+  border-radius:16px;
+  padding:16px;
+  margin-bottom:16px;
+  box-shadow:0 8px 20px rgba(0,0,0,.05);
 }
+.card.muted { opacity:.6 }
 
-.card.muted {
-  background: #f8fafc;
-  opacity: 0.6;
-}
-
-/* =========================
-   HEUTE
-   ========================= */
-
-.today-block {
-  margin-bottom: 14px;
-}
-
-.today-block span {
-  font-size: 14px;
-}
-
+/* TODAY */
+.today-block { margin-bottom:14px }
 .bar {
-  margin-top: 6px;
-  height: 8px;
-  background: #e5e7eb;
-  border-radius: 999px;
-  overflow: hidden;
+  margin-top:6px;
+  height:8px;
+  background:#e5e7eb;
+  border-radius:999px;
+  overflow:hidden;
 }
+.fill { height:100%; width:0%; transition:width .3s }
 
-.fill {
-  height: 100%;
-  width: 0%;
-  transition: width 0.3s ease;
+/* Farben */
+.fill.red { background:#ef4444 }
+.fill.yellow { background:#facc15 }
+.fill.green { background:#22c55e }
+
+/* WEEK */
+#weekChart,#lastWeekChart{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:8px;
 }
-
-.blue {
-  background: #3b82f6;
+.week-day{ font-size:11px; text-align:center }
+.week-bar{
+  height:6px;
+  background:#e5e7eb;
+  border-radius:999px;
+  overflow:hidden;
 }
+.week-fill{ height:100%; width:0% }
+.week-fill.noah{ background:#3b82f6 }
+.week-fill.max{ background:#22c55e }
 
-.green {
-  background: #22c55e;
+/* SAVEBAR */
+.savebar{
+  position:fixed;
+  left:12px; right:12px; bottom:12px;
+  display:flex; gap:10px;
+  padding:14px;
+  padding-bottom:calc(14px + env(safe-area-inset-bottom));
+  background:#fff;
+  border-radius:22px;
+  box-shadow:0 12px 30px rgba(0,0,0,.18);
 }
-
-/* =========================
-   WOCHE & LETZTE WOCHE
-   ========================= */
-
-#weekChart,
-#lastWeekChart {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 8px;
+.savebar.hidden{ display:none }
+.savebar input{
+  width:90px; padding:14px; font-size:16px;
+  border-radius:14px; border:1px solid #d1d5db;
 }
-
-.week-day {
-  text-align: center;
-  font-size: 11px;
-  padding: 6px 4px;
-  border-radius: 10px;
-  background: transparent;
+.savebar button{
+  padding:14px; border:none; border-radius:14px;
+  background:#111; color:#fff;
 }
+#undoBtn{ background:#e5e7eb; color:#111 }
 
-.week-day.today {
-  background: #e0f2fe;
-  border: 1px solid #38bdf8;
+/* LOGIN */
+.overlay{
+  position:fixed; inset:0;
+  background:rgba(0,0,0,.45);
+  display:none; align-items:center; justify-content:center;
 }
-
-.week-day.past {
-  opacity: 0.45;
+.login-card{
+  background:#fff;
+  padding:20px;
+  border-radius:18px;
+  width:90%; max-width:320px;
 }
-
-.week-label {
-  margin-bottom: 4px;
+.login-card input{
+  width:100%; padding:14px; margin-bottom:10px;
+  font-size:16px; border-radius:14px; border:1px solid #d1d5db;
 }
-
-.week-bars {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.week-bar {
-  height: 6px;
-  background: #e5e7eb;
-  border-radius: 999px;
-  overflow: hidden;
-}
-
-.week-fill {
-  height: 100%;
-  width: 0%;
-  transition: width 0.25s ease;
-}
-
-.week-fill.noah {
-  background: #3b82f6;
-}
-
-.week-fill.max {
-  background: #22c55e;
-}
-
-/* =========================
-   STICKY SAVEBAR (iPhone safe)
-   ========================= */
-
-.savebar {
-  position: fixed;
-  left: 12px;
-  right: 12px;
-  bottom: 12px;
-  z-index: 1000;
-
-  display: flex;
-  gap: 10px;
-
-  padding: 14px;
-  padding-bottom: calc(14px + env(safe-area-inset-bottom));
-
-  background: #ffffff;
-  border-radius: 22px;
-  box-shadow: 0 12px 30px rgba(0,0,0,0.18);
-}
-
-.savebar.hidden {
-  display: none;
-}
-
-.savebar input {
-  width: 90px;
-  padding: 14px;
-  font-size: 16px; /* iOS Zoom Fix */
-  border-radius: 14px;
-  border: 1px solid #d1d5db;
-}
-
-.savebar button {
-  flex: 1;
-  padding: 14px;
-  border: none;
-  border-radius: 14px;
-  background: #111111;
-  color: #ffffff;
-  font-size: 15px;
-}
-
-.savebar button:disabled {
-  opacity: 0.4;
-}
-
-/* =========================
-   LOGIN OVERLAY
-   ========================= */
-
-.overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  background: rgba(0,0,0,0.45);
-
-  display: none;
-  align-items: center;
-  justify-content: center;
-}
-
-.login-card {
-  background: #ffffff;
-  padding: 20px;
-  border-radius: 18px;
-  width: 90%;
-  max-width: 320px;
-}
-
-.login-card h2 {
-  margin-top: 0;
-}
-
-.login-card input {
-  width: 100%;
-  padding: 14px;
-  margin-bottom: 10px;
-  font-size: 16px;
-  border-radius: 14px;
-  border: 1px solid #d1d5db;
-}
-
-.login-card button {
-  width: 100%;
-  padding: 14px;
-  border: none;
-  border-radius: 14px;
-  background: #111111;
-  color: #ffffff;
-  font-size: 15px;
-}
-
-/* =========================
-   HINTS
-   ========================= */
-
-.hint {
-  font-size: 13px;
-  color: #6b7280;
-  text-align: center;
+.login-card button{
+  width:100%; padding:14px;
+  border:none; border-radius:14px;
+  background:#111; color:#fff;
 }
