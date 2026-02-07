@@ -1,2 +1,3 @@
-alert("JS LÄUFT");
-document.body.style.background = "red";
+alert("JS OK – vor Firebase");
+
+console.log("Firebase vorhanden?", typeof firebase);
