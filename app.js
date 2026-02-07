@@ -1,32 +1,41 @@
 alert("1️⃣ JS gestartet");
 
+/* =========================
+   FIREBASE INIT
+   ========================= */
 firebase.initializeApp({
-  firebase.firestore().enablePersistence({ synchronizeTabs: false })
-  .then(() => {
-    alert("✅ Firestore Persistence aktiv");
-  })
-  .catch(err => {
-    alert("⚠️ Persistence Fehler: " + err.code);
-  });
-  apiKey: "TEST",
-  projectId: "TEST"
+  // 🔴 DEINE ECHTE firebaseConfig HIER
 });
 
 alert("2️⃣ Firebase init OK");
 
-/* === FIRESTORE TEST === */
-try {
-  const db = firebase.firestore();
-  alert("3️⃣ firebase.firestore() OK");
+/* =========================
+   FIRESTORE – ZUERST PERSISTENCE
+   ========================= */
+const db = firebase.firestore();
 
+db.enablePersistence({ synchronizeTabs: false })
+  .then(() => {
+    alert("3️⃣ ✅ Firestore Persistence AKTIV");
+    startApp(); // 🔥 erst JETZT weiter
+  })
+  .catch(err => {
+    alert("3️⃣ ⚠️ Persistence Fehler: " + err.code);
+    startApp(); // trotzdem weiter (wichtig)
+  });
+
+/* =========================
+   APP START
+   ========================= */
+function startApp() {
+  alert("4️⃣ App startet jetzt");
+
+  // 🔹 MINIMALER TEST-READ
   db.collection("test").doc("ping").get()
     .then(() => {
-      alert("4️⃣ Firestore READ OK");
+      alert("5️⃣ ✅ Firestore READ OK");
     })
     .catch(e => {
       alert("❌ Firestore READ Fehler: " + e.message);
     });
-
-} catch (e) {
-  alert("❌ Firestore INIT Fehler: " + e.message);
 }
