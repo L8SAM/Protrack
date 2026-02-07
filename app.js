@@ -1,9 +1,12 @@
 import { db, auth } from "./firebase.js";
+import { addOfflineEntry, getOfflineEntries, clearOfflineEntries } from "./offline-db.js";
+
 import {
   signInWithEmailAndPassword,
   onAuthStateChanged,
   signOut
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+
 import {
   doc,
   setDoc,
@@ -14,7 +17,7 @@ import {
 const TARGET = 170;
 
 // ELEMENTE
-const loginBtn = document.getElementById("loginBtn");
+const loginBtn = loginBtn = document.getElementById("loginBtn");
 const logoutBtn = document.getElementById("logoutBtn");
 const overlay = document.getElementById("loginOverlay");
 const confirmLogin = document.getElementById("confirmLogin");
@@ -24,25 +27,13 @@ const saveBtn = document.getElementById("saveBtn");
 const input = document.getElementById("proteinInput");
 const userName = document.getElementById("userName");
 const saveHint = document.getElementById("saveHint");
-
-const todayNoah = document.getElementById("todayNoah");
-const todayMax = document.getElementById("todayMax");
-const todayNoahPct = document.getElementById("todayNoahPct");
-const todayMaxPct = document.getElementById("todayMaxPct");
-
-const weekChart = document.getElementById("weekChart");
-const avgNoahEl = document.getElementById("avgNoah");
-const avgMaxEl = document.getElementById("avgMax");
 const offlineHint = document.getElementById("offlineHint");
 
 let currentName = null;
-let weekValues = {};
 
 // LOGIN
 loginBtn.onclick = () => overlay.style.display = "flex";
-overlay.onclick = e => {
-  if (e.target === overlay) overlay.style.display = "none";
-};
+overlay.onclick = e => e.target === overlay && (overlay.style.display = "none");
 confirmLogin.onclick = () =>
   signInWithEmailAndPassword(auth, email.value, password.value);
 logoutBtn.onclick = () => signOut(auth);
@@ -66,93 +57,49 @@ onAuthStateChanged(auth, user => {
 
 // HEUTE
 const today = new Date().toISOString().split("T")[0];
+
 onSnapshot(doc(db, "proteinTracker", today), snap => {
   const data = snap.data() || {};
   const n = Math.min(100, ((data.Noah ?? 0) / TARGET) * 100);
   const m = Math.min(100, ((data.Max ?? 0) / TARGET) * 100);
 
-  todayNoah.style.width = n + "%";
-  todayMax.style.width = m + "%";
-  todayNoahPct.textContent = Math.round(n) + "%";
-  todayMaxPct.textContent = Math.round(m) + "%";
+  document.getElementById("todayNoah").style.width = n + "%";
+  document.getElementById("todayMax").style.width = m + "%";
+  document.getElementById("todayNoahPct").textContent = Math.round(n) + "%";
+  document.getElementById("todayMaxPct").textContent = Math.round(m) + "%";
 });
 
-// WOCHE
-function startOfWeek(d) {
-  const date = new Date(d);
-  const day = date.getDay() || 7;
-  date.setDate(date.getDate() - day + 1);
-  return date;
-}
-
-const monday = startOfWeek(new Date());
-
-for (let i = 0; i < 7; i++) {
-  const d = new Date(monday);
-  d.setDate(monday.getDate() + i);
-  const id = d.toISOString().split("T")[0];
-
-  const el = document.createElement("div");
-  el.className = "week-day";
-  el.innerHTML = `
-    ${d.toLocaleDateString("de-DE", {
-      weekday: "short",
-      day: "2-digit",
-      month: "2-digit"
-    })}
-    <div class="week-bars">
-      <div class="week-bar"><div id="n-${id}" class="week-fill" style="background:#3b82f6"></div></div>
-      <div class="week-bar"><div id="m-${id}" class="week-fill" style="background:#22c55e"></div></div>
-    </div>
-  `;
-  weekChart.appendChild(el);
-
-  onSnapshot(doc(db, "proteinTracker", id), snap => {
-    const data = snap.data() || {};
-
-    weekValues[id] = {
-      Noah: data.Noah ?? 0,
-      Max: data.Max ?? 0
-    };
-
-    document.getElementById(`n-${id}`).style.width =
-      Math.min(100, ((data.Noah ?? 0) / TARGET) * 100) + "%";
-    document.getElementById(`m-${id}`).style.width =
-      Math.min(100, ((data.Max ?? 0) / TARGET) * 100) + "%";
-
-    const days = Object.values(weekValues);
-    const avg = p =>
-      Math.round(
-        days.reduce((s, d) => s + Math.min(100, (d[p] / TARGET) * 100), 0) /
-        days.length
-      );
-
-    avgNoahEl.textContent = avg("Noah") + "%";
-    avgMaxEl.textContent = avg("Max") + "%";
-  });
-}
-
-// SPEICHERN (ADDITIV)
+// SPEICHERN (ONLINE / OFFLINE)
 saveBtn.onclick = async () => {
   if (!currentName) return;
   const val = Number(input.value);
   if (!val) return;
 
-  const ref = doc(db, "proteinTracker", today);
-  const snap = await getDoc(ref);
-  const prev = snap.exists() ? snap.data()[currentName] ?? 0 : 0;
-
-  await setDoc(ref, { [currentName]: prev + val }, { merge: true });
+  if (!navigator.onLine) {
+    await addOfflineEntry({ date: today, user: currentName, value: val });
+    offlineHint.style.display = "block";
+  } else {
+    await saveToFirebase(today, currentName, val);
+  }
 
   input.value = "";
   saveHint.style.display = "block";
   setTimeout(() => saveHint.style.display = "none", 1500);
 };
 
-// OFFLINE
-function updateConnection() {
-  offlineHint.style.display = navigator.onLine ? "none" : "block";
+// SYNC OFFLINE → FIREBASE
+async function saveToFirebase(date, user, val) {
+  const ref = doc(db, "proteinTracker", date);
+  const snap = await getDoc(ref);
+  const prev = snap.exists() ? snap.data()[user] ?? 0 : 0;
+  await setDoc(ref, { [user]: prev + val }, { merge: true });
 }
-window.addEventListener("online", updateConnection);
-window.addEventListener("offline", updateConnection);
-updateConnection();
+
+window.addEventListener("online", async () => {
+  offlineHint.style.display = "none";
+  const entries = await getOfflineEntries();
+  for (const e of entries) {
+    await saveToFirebase(e.date, e.user, e.value);
+  }
+  if (entries.length) await clearOfflineEntries();
+});
