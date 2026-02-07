@@ -7,14 +7,19 @@ firebase.initializeApp({
 
 alert("2️⃣ Firebase init OK");
 
-/* === AUTH TEST === */
+/* === FIRESTORE TEST === */
 try {
-  const auth = firebase.auth();
-  alert("3️⃣ firebase.auth() OK");
+  const db = firebase.firestore();
+  alert("3️⃣ firebase.firestore() OK");
 
-  auth.onAuthStateChanged(() => {
-    alert("4️⃣ onAuthStateChanged ausgelöst");
-  });
+  db.collection("test").doc("ping").get()
+    .then(() => {
+      alert("4️⃣ Firestore READ OK");
+    })
+    .catch(e => {
+      alert("❌ Firestore READ Fehler: " + e.message);
+    });
+
 } catch (e) {
-  alert("❌ AUTH FEHLER: " + e.message);
+  alert("❌ Firestore INIT Fehler: " + e.message);
 }
