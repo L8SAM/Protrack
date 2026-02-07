@@ -23,7 +23,10 @@ const USERS = ["Noah","Max"];
 
 let currentUID = null;
 let currentUser = null;
-let lastEntry = null;
+
+/* 🔁 UNDO STATE */
+let undoEntry = null;
+let undoTimer = null;
 
 const el = id => document.getElementById(id);
 
@@ -41,11 +44,6 @@ function haptic(type){
   if(window.navigator.vibrate){
     navigator.vibrate(type==="success"?30:type==="soft"?10:5);
   }
-}
-
-/* 🎉 Konfetti-Key (1× pro User & Tag) */
-function confettiKey(user, date){
-  return `confetti-${user}-${date}`;
 }
 
 /* LOGIN UI */
@@ -72,7 +70,7 @@ el("confirmLogin").onclick=async()=>{
 
 el("logoutBtn").onclick=()=>auth.signOut();
 
-/* AUTH STATE */
+/* AUTH */
 auth.onAuthStateChanged(user=>{
   if(user){
     currentUID = user.uid;
@@ -96,6 +94,7 @@ auth.onAuthStateChanged(user=>{
     el("loginBtn").style.display="inline";
     el("logoutBtn").style.display="none";
     el("saveBar").classList.add("hidden");
+    hideUndo();
   }
 });
 
@@ -114,16 +113,6 @@ function loadToday(){
       bar.style.width = Math.min(100, p) + "%";
       bar.className = "fill " + color(p);
       el(`today${u}Text`).textContent = `${v} g / ${TARGET} g (${p}%)`;
-
-      /* 🎉 stabiles Konfetti */
-      if (u === currentUser && v >= TARGET) {
-        const key = confettiKey(u, id);
-        if (!localStorage.getItem(key)) {
-          localStorage.setItem(key, "done");
-          haptic("success");
-          launchConfetti();
-        }
-      }
     });
   });
 }
@@ -163,64 +152,58 @@ function loadWeek(offset){
   }
 }
 
-/* SAVE + UNDO */
+/* SAVE */
 el("saveBtn").onclick=async()=>{
-  const input=el("proteinInput");
-  const v=Number(input.value);
-  if(!v||v<0||v>300||!currentUser)return;
+  const input = el("proteinInput");
+  const value = Number(input.value);
+  if(!value || value < 0 || value > 300 || !currentUser) return;
 
-  const d=dateId(new Date());
-  lastEntry={user:currentUser,value:v,date:d};
+  const date = dateId(new Date());
 
-  await db.collection("proteinTracker").doc(d)
+  await db.collection("proteinTracker").doc(date)
     .set(
-      {[currentUser]:firebase.firestore.FieldValue.increment(v)},
+      {[currentUser]:firebase.firestore.FieldValue.increment(value)},
       {merge:true}
     );
 
   input.value="";
-  input.classList.add("flash");
-  setTimeout(()=>input.classList.remove("flash"),400);
-  el("undoBtn").style.opacity=1;
   haptic("soft");
-  setTimeout(()=>el("undoBtn").style.opacity=.3,7000);
+
+  /* 🔁 SET UNDO */
+  setUndo({
+    user: currentUser,
+    date,
+    value
+  });
 };
 
-el("undoBtn").onclick=async()=>{
-  if(!lastEntry)return;
-  await db.collection("proteinTracker").doc(lastEntry.date)
+/* 🔁 UNDO LOGIC */
+function setUndo(entry){
+  undoEntry = entry;
+  clearTimeout(undoTimer);
+
+  const btn = el("undoBtn");
+  btn.textContent = "Rückgängig";
+  btn.style.display = "inline";
+
+  undoTimer = setTimeout(hideUndo, 10000);
+}
+
+function hideUndo(){
+  undoEntry = null;
+  clearTimeout(undoTimer);
+  el("undoBtn").style.display = "none";
+}
+
+el("undoBtn").onclick = async()=>{
+  if(!undoEntry) return;
+
+  await db.collection("proteinTracker").doc(undoEntry.date)
     .set(
-      {[lastEntry.user]:firebase.firestore.FieldValue.increment(-lastEntry.value)},
+      {[undoEntry.user]:firebase.firestore.FieldValue.increment(-undoEntry.value)},
       {merge:true}
     );
-  lastEntry=null;
+
   haptic("light");
+  hideUndo();
 };
-
-/* 🎉 CONFETTI (≈ 0.5 Sekunden) */
-function launchConfetti(){
-  const c=el("confetti"),ctx=c.getContext("2d");
-  c.width=innerWidth;
-  c.height=innerHeight;
-
-  const pieces=[...Array(120)].map(()=>({
-    x:Math.random()*c.width,
-    y:Math.random()*-c.height,
-    r:Math.random()*6+4,
-    c:`hsl(${Math.random()*360},100%,60%)`,
-    v:Math.random()*3+2
-  }));
-
-  let t=0;
-  (function draw(){
-    ctx.clearRect(0,0,c.width,c.height);
-    pieces.forEach(p=>{
-      p.y+=p.v;
-      ctx.beginPath();
-      ctx.fillStyle=p.c;
-      ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-      ctx.fill();
-    });
-    if(t++ < 30) requestAnimationFrame(draw); // ~0.5 s
-  })();
-}
