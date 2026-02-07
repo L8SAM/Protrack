@@ -15,7 +15,7 @@ html { -webkit-text-size-adjust: 100%; }
 body {
   margin:0;
   padding:16px;
-  padding-bottom:120px;
+  padding-bottom:160px; /* 🔥 mehr Platz für Savebar */
   background:var(--bg);
   font-family:system-ui,-apple-system;
   max-width:520px;
@@ -42,6 +42,9 @@ body {
   margin-bottom:16px;
   box-shadow:0 8px 20px rgba(0,0,0,.05);
 }
+.card.secondary {
+  background:#fafafa;
+}
 
 /* TODAY */
 .today-person { margin-bottom:16px; }
@@ -67,19 +70,54 @@ body {
 .today-fill.green { background:var(--green); }
 .today-fill.gold { background:var(--gold); }
 
+/* WEEK */
+#weekChart,
+#lastWeekChart {
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:8px;
+}
+
+.week-day {
+  text-align:center;
+  font-size:11px;
+}
+
+.week-bars {
+  margin-top:4px;
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+
+.week-bar {
+  height:6px;
+  background:#e5e7eb;
+  border-radius:999px;
+  overflow:hidden;
+}
+
+.week-fill {
+  height:100%;
+  width:0%;
+  transition:width .25s ease;
+}
+
 /* SAVE BAR */
 .savebar {
   position:fixed;
-  left:0;
-  right:0;
-  bottom:0;
+  left:12px;
+  right:12px;
+  bottom:12px;
   padding:12px;
   display:flex;
   gap:10px;
   background:#fff;
-  border-top:1px solid #e5e7eb;
+  border-radius:18px;
+  box-shadow:0 10px 30px rgba(0,0,0,.15);
   padding-bottom:calc(12px + env(safe-area-inset-bottom));
 }
+
 .savebar.hidden { display:none; }
 
 .savebar input {
@@ -104,7 +142,7 @@ body {
   position:fixed;
   left:16px;
   right:16px;
-  bottom:80px;
+  bottom:100px;
   background:#111;
   color:#fff;
   padding:12px;
@@ -114,18 +152,5 @@ body {
   align-items:center;
 }
 .undo-bar.hidden { display:none; }
-.undo-bar button {
-  background:none;
-  border:none;
-  color:#93c5fd;
-}
-
-/* WEEK */
-#weekChart {
-  display:grid;
-  grid-template-columns:repeat(7,1fr);
-  gap:6px;
-}
-.week-day { font-size:11px; text-align:center; }
 
 .hint { font-size:13px; color:var(--muted); }
