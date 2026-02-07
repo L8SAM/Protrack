@@ -1,5 +1,8 @@
 *, *::before, *::after { box-sizing: border-box; }
-html { -webkit-text-size-adjust: 100%; overscroll-behavior: contain; }
+html {
+  -webkit-text-size-adjust: 100%;
+  overscroll-behavior: contain;
+}
 
 body {
   margin: 0;
@@ -10,6 +13,10 @@ body {
   color: #111;
   max-width: 520px;
   margin-inline: auto;
+}
+
+body.modal-open {
+  overflow: hidden;
 }
 
 /* HEADER */
@@ -29,7 +36,10 @@ body {
 
 .user-name { font-size:14px; color:#6b7280; }
 .app-header button {
-  background:none; border:none; font-size:14px; color:#6b7280;
+  background:none;
+  border:none;
+  font-size:14px;
+  color:#6b7280;
 }
 
 /* CARDS */
@@ -64,11 +74,13 @@ body {
   border-radius:999px;
   overflow:hidden;
 }
+
 .fill {
   height:100%;
   width:0%;
   transition:width .6s ease, background .3s;
 }
+
 .fill.red { background:#ef4444 }
 .fill.yellow { background:#facc15 }
 .fill.green { background:#22c55e }
@@ -79,46 +91,68 @@ body {
   grid-template-columns:repeat(7,1fr);
   gap:8px;
 }
-.week-day{ font-size:11px; text-align:center }
+
+.week-day {
+  font-size:11px;
+  text-align:center;
+}
+
 .week-day.today{
   outline:2px solid #3b82f6;
   border-radius:8px;
 }
+
 .week-bar{
   height:6px;
   background:#e5e7eb;
   border-radius:999px;
   overflow:hidden;
 }
+
 .week-fill{
   height:100%;
   width:0%;
   transition:width .4s ease;
 }
+
 .week-fill.noah{ background:#3b82f6 }
 .week-fill.max{ background:#22c55e }
 
 /* SAVEBAR */
 .savebar{
   position:fixed;
-  left:12px; right:12px; bottom:12px;
-  display:flex; gap:10px;
+  left:12px;
+  right:12px;
+  bottom:12px;
+  display:flex;
+  gap:10px;
   padding:14px;
   padding-bottom:calc(14px + env(safe-area-inset-bottom));
   background:#fff;
   border-radius:22px;
   box-shadow:0 12px 30px rgba(0,0,0,.18);
 }
+
 .savebar.hidden{ display:none }
+
 .savebar input{
-  width:90px; padding:14px; font-size:16px;
-  border-radius:14px; border:1px solid #d1d5db;
+  width:90px;
+  padding:14px;
+  font-size:16px;
+  border-radius:14px;
+  border:1px solid #d1d5db;
 }
+
 .savebar input.flash { background:#dcfce7; }
+
 .savebar button{
-  padding:14px; border:none; border-radius:14px;
-  background:#111; color:#fff;
+  padding:14px;
+  border:none;
+  border-radius:14px;
+  background:#111;
+  color:#fff;
 }
+
 #undoBtn{
   background:#e5e7eb;
   color:#111;
@@ -126,26 +160,48 @@ body {
   transition:opacity .3s;
 }
 
-/* LOGIN */
-.overlay{
-  position:fixed; inset:0;
-  background:rgba(0,0,0,.45);
-  display:none; align-items:center; justify-content:center;
+/* LOGIN OVERLAY – FIX */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+
+  display: none;
+  align-items: center;
+  justify-content: center;
+
+  isolation: isolate;
 }
+
+/* LOGIN CARD */
 .login-card{
   background:#fff;
   padding:20px;
   border-radius:18px;
-  width:90%; max-width:320px;
+  width:90%;
+  max-width:320px;
 }
+
 .login-card input{
-  width:100%; padding:14px; margin-bottom:10px;
-  font-size:16px; border-radius:14px; border:1px solid #d1d5db;
+  width:100%;
+  padding:14px;
+  margin-bottom:10px;
+  font-size:16px;
+  border-radius:14px;
+  border:1px solid #d1d5db;
 }
+
 .login-card button{
-  width:100%; padding:14px;
-  border:none; border-radius:14px;
-  background:#111; color:#fff;
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:14px;
+  background:#111;
+  color:#fff;
 }
 
 /* CONFETTI */
