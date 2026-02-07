@@ -26,7 +26,6 @@ const password = document.getElementById("password");
 const saveBtn = document.getElementById("saveBtn");
 const input = document.getElementById("proteinInput");
 const userName = document.getElementById("userName");
-const saveHint = document.getElementById("saveHint");
 const offlineHint = document.getElementById("offlineHint");
 
 const todayNoah = document.getElementById("todayNoah");
@@ -34,9 +33,14 @@ const todayMax = document.getElementById("todayMax");
 const todayNoahPct = document.getElementById("todayNoahPct");
 const todayMaxPct = document.getElementById("todayMaxPct");
 
-let currentName = null;
+const weekChart = document.getElementById("weekChart");
+const avgNoahEl = document.getElementById("avgNoah");
+const avgMaxEl = document.getElementById("avgMax");
 
-// LOGIN
+let currentName = null;
+let weekValues = {};
+
+// ---------------- LOGIN ----------------
 loginBtn.onclick = () => overlay.style.display = "flex";
 overlay.onclick = e => e.target === overlay && (overlay.style.display = "none");
 confirmLogin.onclick = () =>
@@ -60,27 +64,84 @@ onAuthStateChanged(auth, user => {
   }
 });
 
-// HEUTE – nur Anzeige
+// ---------------- HEUTE ----------------
 const today = new Date().toISOString().split("T")[0];
+
 onSnapshot(doc(db, "proteinTracker", today), snap => {
-  const data = snap.data() || {};
+  const data = snap.data();
+  if (!data) return;                 // ⛔ nichts überschreiben
   updateBars(data.Noah ?? 0, data.Max ?? 0);
 });
 
-// SPEICHERN
+// ---------------- WOCHE ----------------
+function startOfWeek(d) {
+  const date = new Date(d);
+  const day = date.getDay() || 7;
+  date.setDate(date.getDate() - day + 1);
+  return date;
+}
+
+const monday = startOfWeek(new Date());
+weekChart.innerHTML = ""; // reset
+
+for (let i = 0; i < 7; i++) {
+  const d = new Date(monday);
+  d.setDate(monday.getDate() + i);
+  const id = d.toISOString().split("T")[0];
+
+  const el = document.createElement("div");
+  el.className = "week-day";
+  el.innerHTML = `
+    ${d.toLocaleDateString("de-DE", {
+      weekday: "short",
+      day: "2-digit",
+      month: "2-digit"
+    })}
+    <div class="week-bars">
+      <div class="week-bar"><div id="n-${id}" class="week-fill" style="background:#3b82f6"></div></div>
+      <div class="week-bar"><div id="m-${id}" class="week-fill" style="background:#22c55e"></div></div>
+    </div>
+  `;
+  weekChart.appendChild(el);
+
+  onSnapshot(doc(db, "proteinTracker", id), snap => {
+    const data = snap.data() || {};
+
+    weekValues[id] = {
+      Noah: data.Noah ?? 0,
+      Max: data.Max ?? 0
+    };
+
+    document.getElementById(`n-${id}`).style.width =
+      Math.min(100, (weekValues[id].Noah / TARGET) * 100) + "%";
+
+    document.getElementById(`m-${id}`).style.width =
+      Math.min(100, (weekValues[id].Max / TARGET) * 100) + "%";
+
+    const days = Object.values(weekValues);
+    const avg = p =>
+      Math.round(
+        days.reduce((s, d) => s + Math.min(100, (d[p] / TARGET) * 100), 0) /
+        days.length
+      );
+
+    avgNoahEl.textContent = avg("Noah") + "%";
+    avgMaxEl.textContent = avg("Max") + "%";
+  });
+}
+
+// ---------------- SPEICHERN ----------------
 saveBtn.onclick = async () => {
   if (!currentName) return;
 
   const val = Number(input.value);
   if (!val || val <= 0) return;
 
-  // 🔒 UX-Schutz
-  saveBtn.disabled = true;
-  saveBtn.classList.add("saving");
-  saveBtn.textContent = "✓";
   input.value = "";
+  saveBtn.disabled = true;
+  setTimeout(() => (saveBtn.disabled = false), 800);
 
-  // 🧠 sofort UI
+  // sofort UI
   incrementLocal(currentName, val);
 
   try {
@@ -93,15 +154,9 @@ saveBtn.onclick = async () => {
   } catch (e) {
     console.error(e);
   }
-
-  setTimeout(() => {
-    saveBtn.disabled = false;
-    saveBtn.classList.remove("saving");
-    saveBtn.textContent = "Speichern";
-  }, 1000);
 };
 
-// FIREBASE SAVE
+// ---------------- FIREBASE ----------------
 async function saveToFirebase(date, user, val) {
   const ref = doc(db, "proteinTracker", date);
   const snap = await getDoc(ref);
@@ -109,7 +164,7 @@ async function saveToFirebase(date, user, val) {
   await setDoc(ref, { [user]: prev + val }, { merge: true });
 }
 
-// OFFLINE SYNC
+// ---------------- OFFLINE SYNC ----------------
 window.addEventListener("online", async () => {
   offlineHint.style.display = "none";
   const entries = await getOfflineEntries();
@@ -119,7 +174,7 @@ window.addEventListener("online", async () => {
   if (entries.length) await clearOfflineEntries();
 });
 
-// UI HELFER
+// ---------------- UI HELPERS ----------------
 function updateBars(noah, max) {
   const n = Math.min(100, (noah / TARGET) * 100);
   const m = Math.min(100, (max / TARGET) * 100);
@@ -134,10 +189,12 @@ function incrementLocal(user, val) {
   const pct = Math.round((val / TARGET) * 100);
 
   if (user === "Noah") {
-    todayNoahPct.textContent = Math.min(100, parseInt(todayNoahPct.textContent) + pct) + "%";
-    todayNoah.style.width = todayNoahPct.textContent;
+    const next = Math.min(100, parseInt(todayNoahPct.textContent) + pct);
+    todayNoahPct.textContent = next + "%";
+    todayNoah.style.width = next + "%";
   } else {
-    todayMaxPct.textContent = Math.min(100, parseInt(todayMaxPct.textContent) + pct) + "%";
-    todayMax.style.width = todayMaxPct.textContent;
+    const next = Math.min(100, parseInt(todayMaxPct.textContent) + pct);
+    todayMaxPct.textContent = next + "%";
+    todayMax.style.width = next + "%";
   }
 }
