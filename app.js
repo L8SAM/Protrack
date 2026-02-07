@@ -1,4 +1,3 @@
-/* FIREBASE */
 firebase.initializeApp({
   apiKey: "AIzaSyA5ZCHkx2mTINSJyRMUhZXwNZk7mqrZZLo",
   authDomain: "protrack-d4ab4.firebaseapp.com",
@@ -16,6 +15,7 @@ const TARGET = 170;
 const USERS = ["Noah","Max"];
 let currentUser = "Noah";
 let lastEntry = null;
+let confettiShown = false;
 
 const el = id => document.getElementById(id);
 
@@ -43,14 +43,14 @@ auth.onAuthStateChanged(user=>{
   if(user){
     currentUser = user.email.includes("max") ? "Max" : "Noah";
     el("userName").textContent=currentUser;
+    el("labelNoah").classList.toggle("active", currentUser==="Noah");
+    el("labelMax").classList.toggle("active", currentUser==="Max");
     el("loginBtn").style.display="none";
     el("logoutBtn").style.display="inline";
     el("saveBar").classList.remove("hidden");
     loadToday(); loadWeek(0); loadWeek(-7);
   } else {
     el("userName").textContent="";
-    el("loginBtn").style.display="inline";
-    el("logoutBtn").style.display="none";
     el("saveBar").classList.add("hidden");
   }
 });
@@ -67,6 +67,11 @@ function loadToday(){
       bar.style.width=Math.min(100,p)+"%";
       bar.className="fill "+color(p);
       el(`today${u}Text`).textContent=`${v} g / ${TARGET} g (${p}%)`;
+
+      if(u===currentUser && v>=TARGET && !confettiShown){
+        confettiShown=true;
+        launchConfetti();
+      }
     });
   });
 }
@@ -82,6 +87,7 @@ function loadWeek(offset){
     const id=dateId(d);
     const elDay=document.createElement("div");
     elDay.className="week-day";
+    if(dateId(new Date())===id) elDay.classList.add("today");
     elDay.innerHTML=`
       ${["Mo","Di","Mi","Do","Fr","Sa","So"][i]}<br>${d.getDate()}.${d.getMonth()+1}
       <div class="week-bar"><div class="week-fill noah" id="w-${id}-Noah"></div></div>
@@ -103,12 +109,14 @@ function loadWeek(offset){
 /* SAVE + UNDO */
 el("saveBtn").onclick=async()=>{
   const v=Number(el("proteinInput").value);
-  if(!v)return;
+  if(!v || v<0 || v>300) return;
   const d=dateId(new Date());
   lastEntry={user:currentUser,value:v,date:d};
   await db.collection("proteinTracker").doc(d)
     .set({[currentUser]:firebase.firestore.FieldValue.increment(v)},{merge:true});
   el("proteinInput").value="";
+  el("undoBtn").style.opacity=1;
+  setTimeout(()=>el("undoBtn").style.opacity=.3,7000);
 };
 
 el("undoBtn").onclick=async()=>{
@@ -117,3 +125,28 @@ el("undoBtn").onclick=async()=>{
     .set({[lastEntry.user]:firebase.firestore.FieldValue.increment(-lastEntry.value)},{merge:true});
   lastEntry=null;
 };
+
+/* CONFETTI */
+function launchConfetti(){
+  const c=el("confetti"),ctx=c.getContext("2d");
+  c.width=innerWidth;c.height=innerHeight;
+  const pieces=[...Array(120)].map(()=>({
+    x:Math.random()*c.width,
+    y:Math.random()*-c.height,
+    r:Math.random()*6+4,
+    c:`hsl(${Math.random()*360},100%,60%)`,
+    v:Math.random()*3+2
+  }));
+  let t=0;
+  (function draw(){
+    ctx.clearRect(0,0,c.width,c.height);
+    pieces.forEach(p=>{
+      p.y+=p.v;
+      ctx.beginPath();
+      ctx.fillStyle=p.c;
+      ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fill();
+    });
+    if(t++<120) requestAnimationFrame(draw);
+  })();
+}
