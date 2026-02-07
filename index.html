@@ -4,16 +4,18 @@
   <meta charset="UTF-8" />
   <title>Protrack</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-
   <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
 
 <header class="app-header">
-  <span class="user-name" id="userName"></span>
-  <button id="loginBtn">Login</button>
-  <button id="logoutBtn" style="display:none">Logout</button>
+  <strong id="logo">Protrack</strong>
+  <div>
+    <span class="user-name" id="userName"></span>
+    <button id="loginBtn">Login</button>
+    <button id="logoutBtn" style="display:none">Logout</button>
+  </div>
 </header>
 
 <!-- LOGIN OVERLAY -->
@@ -32,13 +34,11 @@
 
   <div class="today-block">
     <span>Noah</span>
-    <span id="todayNoahText"></span>
     <div class="bar"><div id="todayNoah" class="fill blue"></div></div>
   </div>
 
   <div class="today-block">
     <span>Max</span>
-    <span id="todayMaxText"></span>
     <div class="bar"><div id="todayMax" class="fill green"></div></div>
   </div>
 </section>
@@ -55,14 +55,11 @@
   <div id="lastWeekChart"></div>
 </section>
 
-<!-- SAVEBAR -->
 <div id="saveBar" class="savebar hidden">
   <input id="proteinInput" type="number" placeholder="g">
   <button id="saveBtn">Speichern</button>
 </div>
 
-<!-- 🔥 WICHTIG: MODULE -->
 <script type="module" src="app.js"></script>
-
 </body>
 </html>
